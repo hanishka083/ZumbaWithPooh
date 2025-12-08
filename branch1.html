@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Branch 1 — Transformations</title>
+<style>
+  :root{--pink:#ff0080;--bg:#0b0710;--card:#15121a;--muted:#ffdff0}
+  body{margin:0;background:linear-gradient(180deg,#070407,var(--bg));color:#fff;font-family:Inter,Arial}
+  header{padding:28px;text-align:center}
+  header h1{margin:0;color:var(--pink);font-size:2.1rem}
+  header p{color:var(--muted);margin-top:6px}
+  main{padding:24px;display:flex;flex-direction:column;align-items:center;gap:28px}
+  .card{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,0,128,0.06), rgba(0,0,0,0.16));border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+  .pair{display:flex;gap:18px;align-items:stretch}
+  .pair img{width:50%;height:56vh;object-fit:cover;border-radius:12px;background:#222}
+  .meta{margin-top:12px;text-align:center;color:#ffdff6;font-size:1rem}
+  .controls{display:flex;gap:16px;justify-content:center;margin-top:18px}
+  .btn{padding:12px 22px;border-radius:28px;border:none;background:var(--pink);color:#fff;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.08)}
+  .goto{display:block;margin:34px auto;padding:14px 26px;background:#11b19b;border-radius:28px;color:#041; font-weight:800;text-decoration:none}
+  footer{padding:36px;text-align:center;color:#ffd7ef}
+  @media(max-width:900px){.pair{flex-direction:column}.pair img{height:44vh;width:100%}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Branch 1 — Transformations</h1>
+  <p>Opened in: <strong>[BRANCH 1 YEAR]</strong> · Address: <strong>[BRANCH 1 ADDRESS]</strong></p>
+</header>
+
+<main>
+  <!-- Repeat 10 cards; replace BR1_BEFOREx.jpg and BR1_AFTERx.jpg with your images -->
+  <!-- CARD 1 -->
+  <section class="card" aria-labelledby="t1">
+    <div class="pair" id="t1">
+      <img src="BR1_BEFORE1.jpg" alt="Before 1 (replace)">
+      <img src="BR1_AFTER1.jpg" alt="After 1 (replace)">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t2').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 2 -->
+  <section class="card" aria-labelledby="t2">
+    <div class="pair" id="t2">
+      <img src="BR1_BEFORE2.jpg" alt="Before 2">
+      <img src="BR1_AFTER2.jpg" alt="After 2">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t3').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 3 -->
+  <section class="card" aria-labelledby="t3">
+    <div class="pair" id="t3">
+      <img src="BR1_BEFORE3.jpg" alt="Before 3">
+      <img src="BR1_AFTER3.jpg" alt="After 3">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t4').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 4 -->
+  <section class="card" aria-labelledby="t4">
+    <div class="pair" id="t4">
+      <img src="BR1_BEFORE4.jpg" alt="Before 4">
+      <img src="BR1_AFTER4.jpg" alt="After 4">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t5').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 5 -->
+  <section class="card" aria-labelledby="t5">
+    <div class="pair" id="t5">
+      <img src="BR1_BEFORE5.jpg" alt="Before 5">
+      <img src="BR1_AFTER5.jpg" alt="After 5">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t6').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 6 -->
+  <section class="card" aria-labelledby="t6">
+    <div class="pair" id="t6">
+      <img src="BR1_BEFORE6.jpg" alt="Before 6">
+      <img src="BR1_AFTER6.jpg" alt="After 6">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t7').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 7 -->
+  <section class="card" aria-labelledby="t7">
+    <div class="pair" id="t7">
+      <img src="BR1_BEFORE7.jpg" alt="Before 7">
+      <img src="BR1_AFTER7.jpg" alt="After 7">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t8').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 8 -->
+  <section class="card" aria-labelledby="t8">
+    <div class="pair" id="t8">
+      <img src="BR1_BEFORE8.jpg" alt="Before 8">
+      <img src="BR1_AFTER8.jpg" alt="After 8">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t9').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 9 -->
+  <section class="card" aria-labelledby="t9">
+    <div class="pair" id="t9">
+      <img src="BR1_BEFORE9.jpg" alt="Before 9">
+      <img src="BR1_AFTER9.jpg" alt="After 9">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('t10').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
+    </div>
+  </section>
+
+  <!-- CARD 10 -->
+  <section class="card" aria-labelledby="t10">
+    <div class="pair" id="t10">
+      <img src="BR1_BEFORE10.jpg" alt="Before 10">
+      <img src="BR1_AFTER10.jpg" alt="After 10">
+    </div>
+    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="controls">
+      <button class="btn" onclick="location.href='branch1_fees.html'">View Fees & Services</button>
+      <button class="btn ghost" onclick="document.getElementById('branch2').scrollIntoView({behavior:'smooth'})">Scroll to Branch 2 ↓</button>
+    </div>
+  </section>
+
+  <!-- Quick navigation to Branch 2 page -->
+  <div style="margin:28px;text-align:center">
+    <a class="goto" href="branch2.html">Now… Let's See Branch 2 Transformations 🔥</a>
+  </div>
+</main>
+
+<footer style="text-align:center;padding:28px;color:#ffdff6">
+  <div style="margin-bottom:10px">Want to stay inspired? Visit us on Instagram</div>
+  <button class="btn" onclick="location.href='YOUR_INSTAGRAM_LINK'">Visit Our Instagram</button>
+</footer>
+
+</body>
+</html>
