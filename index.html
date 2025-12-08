@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zumba with Pooh — Landing</title>
+<style>
+  :root{
+    --pink:#ff0080; --pink-2:#ff66b2; --bg:#0b0b0b; --muted:#ffd6ec;
+  }
+  body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:#fff;height:100vh;display:flex;flex-wrap:wrap}
+  .left{flex:1;min-width:320px;background: url('YOUR_LANDING_IMAGE.jpg') center/cover no-repeat}
+  .right{flex:1;min-width:320px;display:flex;flex-direction:column;justify-content:center;padding:48px}
+  h1{font-size:3rem;margin:0;color:var(--pink)}
+  p{color:var(--muted);font-size:1.15rem}
+  .btn{margin-top:28px;padding:14px 28px;border-radius:30px;border:none;background:linear-gradient(90deg,var(--pink),var(--pink-2));color:white;font-weight:700;cursor:pointer;box-shadow:0 8px 30px rgba(255,0,128,.18)}
+  .credit{position:absolute;left:16px;bottom:12px;color:#999;font-size:12px}
+  @media(max-width:900px){body{flex-direction:column}.left{height:40vh}}
+</style>
+</head>
+<body>
+  <div class="left" aria-hidden="true"></div>
+
+  <div class="right">
+    <h1>Zumba with Pooh — Transformations</h1>
+    <p>High energy. Real results. Click to start a joyful transformation journey — we promise you’ll get hooked!</p>
+
+    <button class="btn" onclick="location.href='popup.html'">Click Here to Visit ✨</button>
+
+    <div style="margin-top:18px;color:#ffd6f0">Address (branch selector): <strong>[WRITE ADDRESS / NOTE HERE]</strong></div>
+  </div>
+
+  <div class="credit">© Zumba with Pooh — Replace images & links</div>
+</body>
+</html>
