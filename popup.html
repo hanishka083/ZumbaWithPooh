@@ -4,22 +4,239 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Ready? — Zumba with Pooh</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;font-family:Inter,Arial}
-  .popup{width:92%;max-width:700px;padding:36px;border-radius:18px;background:linear-gradient(180deg, rgba(255,0,128,0.08), rgba(0,0,0,0.35));text-align:center;backdrop-filter: blur(4px)}
-  h2{color:#ff66b2;margin:0 0 12px;font-size:2rem}
-  p{color:#ffd7ee;margin:0 0 18px}
-  .ok{padding:12px 28px;border-radius:28px;border:none;background:#ff0080;color:#fff;font-weight:700;cursor:pointer;margin-right:12px}
-  .no{padding:12px 20px;border-radius:28px;border:1px solid #fff;background:transparent;color:#fff;cursor:pointer}
+  :root {
+    --pink: #ff0080;
+    --pink-2: #ff66b2;
+    --bg: #0b0b0b;
+    --muted: #ffd6ec;
+    --gradient: linear-gradient(135deg, var(--pink), var(--pink-2));
+    --shadow: 0 8px 32px rgba(255,0,128,0.3);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    min-height: 100vh;
+    color: #fff;
+    font-family: 'Inter', Arial;
+    display: flex;
+    flex-direction: column;
+  }
+  nav {
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 0;
+    z-index: 10;
+  }
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+  }
+  .nav-logo {
+    color: var(--pink);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  .nav-links a:hover {
+    color: var(--pink);
+  }
+  .main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.5s ease-out;
+  }
+  .popup {
+    width: 92%;
+    max-width: 700px;
+    padding: 36px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,0,128,0.08), rgba(0,0,0,0.35));
+    text-align: center;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: var(--shadow);
+    animation: slideUp 0.5s ease-out;
+    position: relative;
+    z-index: 10;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  h2 {
+    color: var(--pink);
+    margin: 0 0 12px;
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(255,0,128,0.5);
+  }
+  p {
+    color: var(--muted);
+    margin: 0 0 30px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  .buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 12px 28px;
+    border-radius: 28px;
+    border: none;
+    background: var(--gradient);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+  .btn:hover::before {
+    left: 100%;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255,0,128,0.5);
+  }
+  .btn.no {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .btn.no:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.5);
+  }
+  @media (max-width: 600px) {
+    .buttons { flex-direction: column; align-items: center; }
+    .btn { width: 200px; }
+  }
+  footer {
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 15px 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .footer-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .footer-item i {
+    color: var(--pink);
+  }
+  @media(max-width: 768px) {
+    .nav-container { flex-direction: column; gap: 10px; }
+    .nav-links { gap: 15px; }
+    .footer-content { flex-direction: column; gap: 10px; }
+  }
 </style>
 </head>
 <body>
-  <div class="popup" role="dialog" aria-modal="true">
-    <h2>Are you ready?</h2>
-    <p>You’re about to see transformations so addictive… you won’t believe your eyes. Ready to get inspired?</p>
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">Zumba with Pooh</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="written-reviews.html">Written Reviews</a></li>
+        <li><a href="video-reviews.html">Video Reviews</a></li>
+        <li><a href="branch1.html">Branch 1</a></li>
+        <li><a href="branch2.html">Branch 2</a></li>
+      </ul>
+    </div>
+  </nav>
 
-    <button class="ok" onclick="location.href='branch1.html'">Show Me! 🔥</button>
-    <button class="no" onclick="location.href='index.html'">Not now</button>
+  <div class="main-content">
+    <div class="overlay"></div>
+    <div class="popup" role="dialog" aria-modal="true">
+      <h2>Are you ready?</h2>
+      <p>You’re about to see transformations so addictive… you won’t believe your eyes. Ready to get inspired?</p>
+
+      <div class="buttons">
+        <button class="btn" onclick="location.href='branch1.html'">Show Me! 🔥</button>
+        <button class="btn no" onclick="location.href='index.html'">Not now</button>
+      </div>
+    </div>
   </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-item">
+        <i class="fas fa-phone"></i>
+        <span>+1 (123) 456-7890</span>
+      </div>
+      <div class="footer-item">
+        <i class="fab fa-instagram"></i>
+        <span>@zumbawithpooh</span>
+      </div>
+      <div class="footer-item">
+        <i class="fas fa-envelope"></i>
+        <span>info@zumbawithpooh.com</span>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
