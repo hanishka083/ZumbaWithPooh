@@ -36,6 +36,59 @@
     align-items: center;
     padding: 15px 20px;
   }
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .sidebar {
+    display: none;
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: left 0.3s ease;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .sidebar.open {
+    left: 0;
+  }
+  .sidebar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-links li {
+    margin-bottom: 20px;
+  }
+  .sidebar-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+  }
+  .sidebar-links a:hover {
+    color: var(--pink);
+  }
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
   .nav-logo {
     color: var(--pink);
     font-size: 1.5rem;
@@ -329,9 +382,54 @@
     color: var(--pink);
   }
   @media(max-width: 768px) {
-    .nav-container { flex-direction: column; gap: 10px; }
-    .nav-links { gap: 15px; }
+    .nav-container { flex-direction: row; gap: 10px; }
+    .nav-links { display: none; }
+    .hamburger { display: block; }
+    .sidebar { display: block; }
     .footer-content { flex-direction: column; gap: 10px; }
+  }
+  @media(max-width: 480px) {
+    .nav-container {
+      padding: 10px 15px;
+    }
+    .nav-logo {
+      font-size: 1.3rem;
+    }
+    .nav-links {
+      gap: 10px;
+    }
+    .hero-content {
+      padding: 0 10px;
+    }
+    .hero-content h1 {
+      font-size: 2rem;
+    }
+    .hero-content .subtitle {
+      font-size: 1rem;
+      margin-bottom: 30px;
+    }
+    .hero-features {
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+    .feature i {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+    .feature span {
+      font-size: 0.9rem;
+    }
+    .btn {
+      padding: 12px 24px;
+      font-size: 0.9rem;
+    }
+    footer {
+      padding: 10px 15px;
+      font-size: 0.8rem;
+    }
+    .footer-content {
+      gap: 15px;
+    }
   }
 </style>
 </head>
@@ -339,16 +437,29 @@
   <nav>
     <div class="nav-container">
       <a href="index.html" class="nav-logo">Zumba with Pooh</a>
+      <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="services.html">Services</a></li>
-        <li><a href="written-reviews.html">Written Reviews</a></li>
+        <li><a href="https://share.google/jzNWww9OwAIvt4YhK" target="_blank">Written Reviews</a></li>
         <li><a href="video-reviews.html">Video Reviews</a></li>
         <li><a href="branch1.html">Branch 1</a></li>
         <li><a href="branch2.html">Branch 2</a></li>
       </ul>
     </div>
   </nav>
+
+  <div class="sidebar" id="sidebar">
+    <button class="close-btn" onclick="toggleSidebar()">&times;</button>
+    <ul class="sidebar-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="https://share.google/jzNWww9OwAIvt4YhK" target="_blank">Written Reviews</a></li>
+      <li><a href="video-reviews.html">Video Reviews</a></li>
+      <li><a href="branch1.html">Branch 1</a></li>
+      <li><a href="branch2.html">Branch 2</a></li>
+    </ul>
+  </div>
 
   <div class="hero-section">
     <div class="hero-overlay"></div>
@@ -395,5 +506,11 @@
   <div class="sparkle"></div>
   <div class="sparkle"></div>
   <div class="sparkle"></div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+  </script>
 </body>
 </html>
