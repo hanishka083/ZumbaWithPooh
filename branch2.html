@@ -63,6 +63,59 @@
   .nav-links a:hover {
     color: var(--pink);
   }
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .sidebar {
+    display: none;
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: left 0.3s ease;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .sidebar.open {
+    left: 0;
+  }
+  .sidebar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-links li {
+    margin-bottom: 20px;
+  }
+  .sidebar-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+  }
+  .sidebar-links a:hover {
+    color: var(--pink);
+  }
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
   header {
     padding: 28px;
     text-align: center;
@@ -111,7 +164,7 @@
   .pair img {
     width: 50%;
     height: 56vh;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 12px;
     background: #222;
     transition: transform 0.3s ease;
@@ -198,7 +251,7 @@
   }
   @media(max-width: 900px) {
     .pair { flex-direction: column; }
-    .pair img { height: 44vh; width: 100%; }
+    .pair img { height: 44vh; width: 100%; object-fit: contain; }
     .nav-container { flex-direction: column; gap: 10px; }
     .nav-links { gap: 15px; }
     .controls { flex-direction: column; align-items: center; }
@@ -230,8 +283,179 @@
   .footer-item i {
     color: var(--pink);
   }
+  .admin-btn {
+    background: var(--gradient);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  .admin-btn:hover {
+    transform: scale(1.05);
+  }
+  .upload-section {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 40px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: none; /* Hidden by default */
+  }
+  .upload-section h2 {
+    margin-bottom: 20px;
+    color: var(--pink);
+  }
+  .upload-btn {
+    background: var(--gradient);
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  .upload-btn:hover {
+    transform: scale(1.05);
+  }
+  .logout-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background 0.3s ease;
+  }
+  .logout-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  .modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background: var(--bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+  }
+  .modal-content h2 {
+    color: var(--pink);
+    margin-bottom: 20px;
+  }
+  .modal-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+  }
+  .modal-buttons button {
+    background: var(--gradient);
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+  }
+  .modal-buttons button:hover {
+    transform: scale(1.05);
+  }
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #fff;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
   @media(max-width: 768px) {
-    .footer-content { flex-direction: column; gap: 10px; }
+    .nav-container {
+      flex-direction: column;
+      gap: 15px;
+      padding: 10px 15px;
+    }
+    .nav-links {
+      display: none;
+    }
+    .hamburger {
+      display: block;
+    }
+    .sidebar {
+      display: block;
+    }
+    .admin-btn, .logout-btn {
+      position: static;
+      margin: 10px auto;
+      display: inline-block;
+    }
+    header {
+      padding: 20px 10px;
+    }
+    header h1 {
+      font-size: 2rem;
+    }
+    header p {
+      font-size: 0.9rem;
+    }
+    .card {
+      margin: 20px 10px;
+    }
+    .pair {
+      flex-direction: column;
+    }
+    .pair img {
+      height: 40vh;
+      width: 100%;
+      object-fit: contain;
+    }
+    .meta {
+      font-size: 0.9rem;
+    }
+    .controls {
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+    }
+    .modal-content {
+      padding: 20px;
+      margin: 20px;
+      max-width: 90%;
+    }
+    .modal-buttons {
+      flex-direction: column;
+      gap: 15px;
+    }
+    .modal-buttons button {
+      width: 100%;
+    }
+    .footer-content {
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+    }
   }
   @media(max-width: 600px) {
     header {
@@ -248,6 +472,7 @@
     }
     .pair img {
       height: 30vh;
+      object-fit: contain;
     }
     .controls {
       gap: 10px;
@@ -277,16 +502,46 @@
 <nav>
   <div class="nav-container">
     <a href="index.html" class="nav-logo">Zumba with Pooh</a>
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="services.html">Services</a></li>
-      <li><a href="https://share.google/jzNWww9OwAIvt4YhK" target="_blank">Written Reviews</a></li>
-      <li><a href="video-reviews.html">Video Reviews</a></li>
+      <li><a href="#" onclick="openTestimonialsPopup()">Testimonials</a></li>
+      <li><a href="contact.html">Contact</a></li>
       <li><a href="branch1.html">Branch 1</a></li>
-      <li><a href="branch2.html">Branch 2</a></li>
+      <li><a href="branch2.html" class="active">Branch 2</a></li>
     </ul>
   </div>
 </nav>
+
+<div style="position: absolute; top: 10px; right: 20px; z-index: 10;">
+  <button class="admin-btn" id="adminBtn" onclick="adminLogin()">Admin</button>
+  <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" style="display: none;">Logout</button>
+</div>
+
+<!-- Testimonials Modal -->
+<div id="testimonialsModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeTestimonialsPopup()">&times;</span>
+    <h2>Choose Testimonial Type</h2>
+    <div class="modal-buttons">
+      <button onclick="window.open('https://share.google/jzNWww9OwAIvt4YhK', '_blank')">Written Reviews</button>
+      <button onclick="window.location.href='video-reviews.html'">Video Reviews</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar" id="sidebar">
+  <button class="close-btn" onclick="toggleSidebar()">&times;</button>
+  <ul class="sidebar-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="#" onclick="openTestimonialsPopup()">Testimonials</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="branch1.html">Branch 1</a></li>
+    <li><a href="branch2.html">Branch 2</a></li>
+  </ul>
+</div>
 
 <header>
   <h1>Branch 2 — Transformations</h1>
@@ -294,6 +549,14 @@
 </header>
 
 <main>
+  <div class="upload-section" id="uploadSection">
+    <h2>Upload Transformation Images</h2>
+    <p>Upload before and after images for Branch 2 transformations.</p>
+    <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+    <button class="upload-btn" onclick="document.getElementById('imageInput').click()">Choose Images</button>
+    <p id="uploadStatus" style="margin-top: 10px; color: var(--pink);"></p>
+  </div>
+
   <!-- Repeat 10 cards; replace BR2_BEFOREx.jpg and BR2_AFTERx.jpg with your images -->
   <!-- CARD 1 -->
   <section class="card" aria-labelledby="t1">
@@ -301,9 +564,8 @@
       <img src="BR2_BEFORE1.jpg" alt="Before 1 (replace)">
       <img src="BR2_AFTER1.jpg" alt="After 1 (replace)">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t2').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -314,9 +576,8 @@
       <img src="BR2_BEFORE2.jpg" alt="Before 2">
       <img src="BR2_AFTER2.jpg" alt="After 2">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t3').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -327,9 +588,8 @@
       <img src="BR2_BEFORE3.jpg" alt="Before 3">
       <img src="BR2_AFTER3.jpg" alt="After 3">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t4').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -340,9 +600,8 @@
       <img src="BR2_BEFORE4.jpg" alt="Before 4">
       <img src="BR2_AFTER4.jpg" alt="After 4">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t5').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -353,9 +612,8 @@
       <img src="BR2_BEFORE5.jpg" alt="Before 5">
       <img src="BR2_AFTER5.jpg" alt="After 5">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t6').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -366,9 +624,8 @@
       <img src="BR2_BEFORE6.jpg" alt="Before 6">
       <img src="BR2_AFTER6.jpg" alt="After 6">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t7').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -379,9 +636,8 @@
       <img src="BR2_BEFORE7.jpg" alt="Before 7">
       <img src="BR2_AFTER7.jpg" alt="After 7">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t8').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -392,9 +648,8 @@
       <img src="BR2_BEFORE8.jpg" alt="Before 8">
       <img src="BR2_AFTER8.jpg" alt="After 8">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t9').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -405,9 +660,8 @@
       <img src="BR2_BEFORE9.jpg" alt="Before 9">
       <img src="BR2_AFTER9.jpg" alt="After 9">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="document.getElementById('t10').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
@@ -418,9 +672,8 @@
       <img src="BR2_BEFORE10.jpg" alt="Before 10">
       <img src="BR2_AFTER10.jpg" alt="After 10">
     </div>
-    <div class="meta">Name: <strong>________</strong> • Age: <strong>____</strong></div>
+    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
     <div class="controls">
-      <button class="btn" onclick="location.href='branch2_fees.html'">View Fees & Services</button>
       <button class="btn ghost" onclick="location.href='index.html'">Back to Home ↑</button>
     </div>
   </section>
@@ -447,6 +700,115 @@
     </div>
   </div>
 </footer>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+  }
+
+  function openTestimonialsPopup() {
+    document.getElementById('testimonialsModal').style.display = 'flex';
+  }
+
+  function closeTestimonialsPopup() {
+    document.getElementById('testimonialsModal').style.display = 'none';
+  }
+
+  function adminLogin() {
+    const password = prompt('Enter admin password:');
+    if (password === 'poohadmin') {
+      localStorage.setItem('adminLoggedIn', 'true');
+      document.getElementById('uploadSection').style.display = 'block';
+      document.getElementById('adminBtn').style.display = 'none';
+      document.getElementById('logoutBtn').style.display = 'inline-block';
+      alert('Admin access granted!');
+    } else {
+      alert('Incorrect password.');
+    }
+  }
+
+  function adminLogout() {
+    localStorage.removeItem('adminLoggedIn');
+    document.getElementById('uploadSection').style.display = 'none';
+    document.getElementById('adminBtn').style.display = 'inline-block';
+    document.getElementById('logoutBtn').style.display = 'none';
+    alert('Logged out successfully!');
+  }
+
+  window.onload = function() {
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+      document.getElementById('uploadSection').style.display = 'block';
+      document.getElementById('adminBtn').style.display = 'none';
+      document.getElementById('logoutBtn').style.display = 'inline-block';
+    }
+  };
+
+  const maxImages = 20; // 10 before + 10 after
+
+  // Function to convert file to base64
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  // Load saved images from localStorage
+  function loadSavedImages() {
+    const images = document.querySelectorAll('main .pair img');
+    for (let i = 0; i < maxImages; i++) {
+      const savedImage = localStorage.getItem(`branch2_image_${i}`);
+      if (savedImage) {
+        images[i].src = savedImage;
+        images[i].alt = `Uploaded ${i + 1}`;
+      }
+    }
+  }
+
+  document.getElementById('imageInput').addEventListener('change', async function(event) {
+    const files = event.target.files;
+    const images = document.querySelectorAll('main .pair img');
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file && file.type.startsWith('image/')) {
+        // Find the next empty slot
+        let slot = 0;
+        while (localStorage.getItem(`branch2_image_${slot}`) && slot < maxImages) {
+          slot++;
+        }
+        if (slot < maxImages) {
+          try {
+            const base64Data = await fileToBase64(file);
+            images[slot].src = base64Data;
+            images[slot].alt = `Uploaded ${slot + 1}`;
+            
+            // Save to localStorage
+            localStorage.setItem(`branch2_image_${slot}`, base64Data);
+          } catch (error) {
+            console.error('Error converting file to base64:', error);
+          }
+        }
+      }
+    }
+    
+    if (files.length > 0) {
+      document.getElementById('uploadStatus').textContent = `${files.length} image(s) processed.`;
+      setTimeout(() => {
+        document.getElementById('uploadStatus').textContent = '';
+      }, 3000);
+    }
+    
+    // Reset the input so the same file can be selected again if needed
+    event.target.value = '';
+  });
+
+  // Load saved images when page loads
+  window.addEventListener('load', loadSavedImages);
+</script>
 
 </body>
 </html>
