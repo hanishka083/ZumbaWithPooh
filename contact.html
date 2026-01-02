@@ -16,6 +16,7 @@
   body {
     margin: 0;
     font-family: 'Inter', system-ui, Arial;
+    font-size: 18px;
     background: var(--bg);
     color: #fff;
     min-height: 100vh;
@@ -306,11 +307,6 @@
       </ul>
     </div>
   </nav>
-
-  <div style="position: absolute; top: 10px; right: 20px; z-index: 10;">
-    <button class="admin-btn" id="adminBtn" onclick="adminLogin()">Admin</button>
-    <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" style="display: none;">Logout</button>
-  </div>
 
   <div class="sidebar" id="sidebar">
     <button class="close-btn" onclick="toggleSidebar()">&times;</button>

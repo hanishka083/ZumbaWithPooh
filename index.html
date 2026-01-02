@@ -16,6 +16,7 @@
   body {
     margin: 0;
     font-family: 'Inter', system-ui, Arial;
+    font-size: 18px;
     background: var(--bg);
     color: #fff;
     height: 100vh;
@@ -303,6 +304,74 @@
     transform: scale(1.05);
     box-shadow: 0 12px 40px rgba(255,0,128,0.5);
   }
+  /* Attractive Offer Button */
+  .offer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding: 18px 40px;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, #ff0080, #ff6b35, #ff0080);
+    background-size: 200% 200%;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(255,0,128,0.5), 0 0 60px rgba(255,0,128,0.3);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    animation: gradientShift 3s ease infinite, pulseGlow 2s ease-in-out infinite;
+    text-decoration: none;
+  }
+  .offer-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+  }
+  .offer-btn::after {
+    content: '🔥';
+    position: absolute;
+    right: -30px;
+    animation: fireWiggle 0.5s ease-in-out infinite;
+  }
+  .offer-btn:hover {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 15px 50px rgba(255,0,128,0.7), 0 0 80px rgba(255,107,53,0.5);
+  }
+  .offer-btn i {
+    font-size: 1.4rem;
+    animation: bounce 1s ease infinite;
+  }
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 8px 30px rgba(255,0,128,0.5), 0 0 60px rgba(255,0,128,0.3); }
+    50% { box-shadow: 0 8px 40px rgba(255,0,128,0.7), 0 0 80px rgba(255,0,128,0.5); }
+  }
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+  @keyframes fireWiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
   .address {
     margin-top: 18px;
     color: #ffd6f0;
@@ -461,6 +530,254 @@
     font-weight: bold;
     cursor: pointer;
   }
+  /* Offer Modal Styles */
+  .offer-modal {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .offer-modal-content {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid var(--pink);
+    border-radius: 20px;
+    padding: 12px;
+    width: fit-content;
+    max-width: 94vw;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 60px rgba(255,0,128,0.5);
+    animation: scaleIn 0.4s ease;
+    max-height: 92vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+  @keyframes scaleIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .offer-modal-content h2 {
+    color: var(--pink);
+    font-size: 2.2rem;
+    margin: 0;
+    text-shadow: 0 0 20px rgba(255,0,128,0.5);
+  }
+  .offer-modal-content .offer-main-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin: 0;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 26px rgba(255,0,128,0.35);
+    letter-spacing: -0.5px;
+  }
+  .offer-modal-content .offer-validity {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 999px;
+    margin: 0;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .offer-modal-content .offer-image {
+    width: auto;
+    max-width: 94vw;
+    height: calc(92vh - 170px);
+    max-height: calc(92vh - 170px);
+    border-radius: 10px;
+    margin: 0;
+    object-fit: contain;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .offer-modal-content .offer-text {
+    max-width: 94vw;
+    max-height: 10vh;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+  .offer-modal-content .offer-text {
+    color: #fff;
+    font-size: 1.25rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+  .offer-modal-content .no-offer {
+    color: #888;
+    font-size: 1.2rem;
+    padding: 40px 0;
+  }
+  .offer-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #fff;
+    font-size: 30px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .offer-close:hover {
+    color: var(--pink);
+  }
+  .offer-btn.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    filter: grayscale(0.2);
+  }
+
+  /* Admin Offer Panel */
+  .admin-offer-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #1a1a2e, #0f0f1a);
+    border: 2px solid var(--pink);
+    border-radius: 15px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    z-index: 1002;
+    display: none;
+    box-shadow: 0 0 60px rgba(255,0,128,0.4);
+  }
+  .admin-offer-panel h3 {
+    color: var(--pink);
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+  .admin-offer-panel label {
+    display: block;
+    color: #fff;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .admin-offer-panel input[type="text"],
+  .admin-offer-panel textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    resize: vertical;
+  }
+  .admin-offer-panel input[type="text"]:focus,
+  .admin-offer-panel textarea:focus {
+    outline: none;
+    border-color: var(--pink);
+  }
+  .admin-offer-panel textarea {
+    min-height: 100px;
+  }
+  .admin-offer-panel .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .admin-offer-panel .save-offer-btn {
+    flex: 1;
+    padding: 12px;
+    background: var(--gradient);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  .admin-offer-panel .save-offer-btn:hover {
+    transform: scale(1.02);
+  }
+  .admin-offer-panel .cancel-btn {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .admin-offer-panel .cancel-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  .admin-offer-panel .image-preview {
+    max-width: 100%;
+    max-height: 150px;
+    border-radius: 8px;
+    margin: 10px 0;
+    display: none;
+  }
+  .admin-offer-panel .upload-image-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px dashed rgba(255,255,255,0.4);
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+  }
+  .admin-offer-panel .upload-image-btn:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: var(--pink);
+  }
+  .admin-offer-panel .status-msg {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+  .edit-offer-btn {
+    background: linear-gradient(135deg, #ff6b35, #ff0080);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+  }
+  .edit-offer-btn:hover {
+    transform: scale(1.05);
+  }
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1001;
+    display: none;
+  }
   @media(max-width: 768px) {
     .nav-container { 
       flex-direction: column; 
@@ -565,7 +882,6 @@
     }
   
 </style>
-</head>
 <body>
   <nav>
     <div class="nav-container">
@@ -584,6 +900,7 @@
 
   <div style="position: absolute; top: 10px; right: 20px; z-index: 10;">
     <button class="admin-btn" id="adminBtn" onclick="adminLogin()">Admin</button>
+    <button class="edit-offer-btn" id="editOfferBtn" onclick="openOfferEditor()" style="display: none;"><i class="fas fa-edit"></i> Edit Offer</button>
     <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" style="display: none;">Logout</button>
   </div>
 
@@ -630,6 +947,10 @@
           <span>Fun Community</span>
         </div>
       </div>
+      <a href="#" class="offer-btn" onclick="viewLatestOffer(event)">
+        <i class="fas fa-gift"></i>
+        View Latest Offer
+      </a>
     </div>
   </div>
 
@@ -650,6 +971,49 @@
     </div>
   </footer>
 
+  <!-- Offer Display Modal (for users) -->
+  <div id="offerModal" class="offer-modal">
+    <div class="offer-modal-content">
+      <span class="offer-close" onclick="closeOfferModal()">&times;</span>
+      <div id="offerDisplayTitle" class="offer-main-title" style="display:none;"></div>
+      <div id="offerValidity" class="offer-validity" style="display:none;"></div>
+      <img id="offerDisplayImage" class="offer-image" src="" alt="Offer" style="display: none;">
+      <div id="offerDisplayText" class="offer-text"></div>
+      <div id="noOfferMessage" class="no-offer" style="display: none;">
+        <i class="fas fa-clock" style="font-size: 3rem; color: var(--pink); margin-bottom: 15px; display: block;"></i>
+        No offers available right now.<br>Check back soon!
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay for Admin Panel -->
+  <div id="adminOverlay" class="overlay" onclick="closeOfferEditor()"></div>
+
+  <!-- Admin Offer Editor Panel -->
+  <div id="adminOfferPanel" class="admin-offer-panel">
+    <h3><i class="fas fa-gift"></i> Edit Latest Offer</h3>
+    
+    <label>Offer Title:</label>
+    <input type="text" id="offerTitle" placeholder="e.g. NEW YEAR SPECIAL!">
+    
+    <label>Offer Details:</label>
+    <textarea id="offerDetails" placeholder="Enter offer details...&#10;e.g. Get 20% OFF on all packages!&#10;Valid till January 15, 2025"></textarea>
+    
+    <label>Offer Image (optional):</label>
+    <input type="file" id="offerImageInput" accept="image/*" onchange="previewOfferImage(this)" style="display: none;">
+    <div class="upload-image-btn" onclick="document.getElementById('offerImageInput').click()">
+      <i class="fas fa-image"></i> Choose Image
+    </div>
+    <img id="offerImagePreview" class="image-preview" src="">
+    
+    <div class="btn-row">
+      <button class="save-offer-btn" onclick="saveOffer()"><i class="fas fa-save"></i> Save Offer</button>
+      <button class="cancel-btn" onclick="closeOfferEditor()">Cancel</button>
+    </div>
+    <button class="cancel-btn" style="width: 100%; margin-top: 10px; background: #ff4444; border-color: #ff4444;" onclick="deleteOffer()"><i class="fas fa-trash"></i> Delete Offer</button>
+    <p id="offerStatus" class="status-msg"></p>
+  </div>
+
   <div class="sparkle"></div>
   <div class="sparkle"></div>
   <div class="sparkle"></div>
@@ -657,7 +1021,46 @@
   <div class="sparkle"></div>
   <div class="sparkle"></div>
 
+
+
   <script>
+    // Backend API
+    // - Local dev: http://localhost:5000/api
+    // - Deployed (required for GitHub Pages QR link): set your public API base below
+    const DEPLOYED_API_BASE = 'https://zumbawithpooh.onrender.com/api';
+    const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000/api'
+      : DEPLOYED_API_BASE;
+
+    // Cloudinary Configuration
+    const CLOUDINARY_CLOUD_NAME = 'dydajkqdk';
+    const CLOUDINARY_UPLOAD_PRESET = 'ZumbaWithPooh';
+    const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+    let currentOfferImageFile = null;
+    let offerModalOpen = false;
+
+    function setOfferButtonDisabled(disabled) {
+      const btn = document.querySelector('.offer-btn');
+      if (!btn) return;
+      btn.classList.toggle('disabled', disabled);
+    }
+
+    function extractValidity(details) {
+      if (!details) return { validity: '', details: '' };
+      const lines = String(details).split(/\r?\n/);
+      const remaining = [];
+      let validity = '';
+      for (const line of lines) {
+        if (!validity && /\bvalid\b/i.test(line)) {
+          validity = line.trim();
+        } else {
+          remaining.push(line);
+        }
+      }
+      return { validity, details: remaining.join('\n').trim() };
+    }
+
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
     }
@@ -674,9 +1077,8 @@
       const password = prompt('Enter admin password:');
       if (password === 'poohadmin') {
         localStorage.setItem('adminLoggedIn', 'true');
-        document.getElementById('adminBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
-        alert('Admin access granted!');
+        updateAdminUI(true);
+        alert('Admin access granted! You can now edit offers.');
       } else {
         alert('Incorrect password.');
       }
@@ -684,16 +1086,287 @@
 
     function adminLogout() {
       localStorage.removeItem('adminLoggedIn');
-      document.getElementById('adminBtn').style.display = 'inline-block';
-      document.getElementById('logoutBtn').style.display = 'none';
+      updateAdminUI(false);
+      closeOfferEditor();
       alert('Logged out successfully!');
     }
 
-    window.onload = function() {
-      if (localStorage.getItem('adminLoggedIn') === 'true') {
-        document.getElementById('adminBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
+    function updateAdminUI(isAdmin) {
+      document.getElementById('adminBtn').style.display = isAdmin ? 'none' : 'inline-block';
+      document.getElementById('logoutBtn').style.display = isAdmin ? 'inline-block' : 'none';
+      document.getElementById('editOfferBtn').style.display = isAdmin ? 'inline-block' : 'none';
+    }
+
+    // Open offer editor for admin
+    function openOfferEditor() {
+      document.getElementById('adminOverlay').style.display = 'block';
+      document.getElementById('adminOfferPanel').style.display = 'block';
+      loadOfferForEditing();
+    }
+
+    function closeOfferEditor() {
+      document.getElementById('adminOverlay').style.display = 'none';
+      document.getElementById('adminOfferPanel').style.display = 'none';
+      document.getElementById('offerStatus').textContent = '';
+    }
+
+    // Preview image before upload
+    function previewOfferImage(input) {
+      if (input.files && input.files[0]) {
+        currentOfferImageFile = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('offerImagePreview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
       }
+    }
+
+    // Load existing offer into editor
+    async function loadOfferForEditing() {
+      try {
+        const response = await fetch(`${API_BASE}/offers/latest`);
+        if (!response.ok) return;
+        const data = await response.json();
+        if (!data) return;
+
+        document.getElementById('offerTitle').value = data.title || '';
+        document.getElementById('offerDetails').value = data.details || '';
+        if (data.imageUrl) {
+          document.getElementById('offerImagePreview').src = data.imageUrl;
+          document.getElementById('offerImagePreview').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error loading offer:', error);
+      }
+    }
+
+    // Save offer to backend (with Cloudinary image upload)
+    async function saveOffer() {
+      const statusEl = document.getElementById('offerStatus');
+      const title = document.getElementById('offerTitle').value.trim();
+      const details = document.getElementById('offerDetails').value.trim();
+
+      // Keep existing image if a new file isn't selected
+      const previewEl = document.getElementById('offerImagePreview');
+      const existingImageUrl = (previewEl && previewEl.src && previewEl.style.display !== 'none') ? previewEl.src : '';
+
+      // Allow saving with only image (title/details optional)
+      if (!title && !details && !currentOfferImageFile && !existingImageUrl) {
+        statusEl.textContent = '⚠️ Please enter a title/details OR choose an image.';
+        statusEl.style.color = '#ff6b6b';
+        return;
+      }
+
+      try {
+        statusEl.textContent = 'Saving offer...';
+        statusEl.style.color = '#ffa500';
+
+        let imageUrl = existingImageUrl || '';
+
+        // Upload image to Cloudinary if selected
+        if (currentOfferImageFile) {
+          statusEl.textContent = 'Uploading image to Cloudinary...';
+          const formData = new FormData();
+          formData.append('file', currentOfferImageFile);
+          formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+          formData.append('folder', 'offers');
+          formData.append('public_id', `offer_${Date.now()}`);
+          let response, data;
+          try {
+            response = await fetch(CLOUDINARY_UPLOAD_URL, {
+              method: 'POST',
+              body: formData
+            });
+          } catch (err) {
+            statusEl.textContent = '❌ Network error uploading to Cloudinary.';
+            statusEl.style.color = '#ff6b6b';
+            console.error('Cloudinary network error:', err);
+            return;
+          }
+          if (!response.ok) {
+            let errMsg = 'Cloudinary upload failed';
+            try {
+              data = await response.json();
+              if (data && data.error && data.error.message) errMsg += ': ' + data.error.message;
+            } catch {}
+            statusEl.textContent = '❌ ' + errMsg;
+            statusEl.style.color = '#ff6b6b';
+            console.error('Cloudinary upload error:', response.status, data);
+            return;
+          }
+          data = await response.json();
+          if (!data.secure_url) {
+            statusEl.textContent = '❌ Cloudinary did not return a URL.';
+            statusEl.style.color = '#ff6b6b';
+            console.error('Cloudinary response:', data);
+            return;
+          }
+          imageUrl = data.secure_url;
+          statusEl.textContent = 'Image uploaded to Cloudinary.';
+        }
+
+        statusEl.textContent = 'Saving offer...';
+        const saveResp = await fetch(`${API_BASE}/offers/latest`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, details, imageUrl })
+        });
+
+        if (!saveResp.ok) {
+          const err = await saveResp.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to save offer');
+        }
+
+        statusEl.textContent = '✓ Offer saved!';
+        statusEl.style.color = '#11b19b';
+        currentOfferImageFile = null;
+
+        if (imageUrl) {
+          previewEl.src = imageUrl;
+          previewEl.style.display = 'block';
+        }
+
+        setTimeout(() => {
+          closeOfferEditor();
+        }, 1500);
+
+      } catch (error) {
+        console.error('Error saving offer:', error);
+        statusEl.textContent = '❌ Error: ' + error.message;
+        statusEl.style.color = '#ff6b6b';
+      }
+    }
+
+    // Delete offer
+    async function deleteOffer() {
+      if (!confirm('Are you sure you want to delete the current offer?')) return;
+
+      const statusEl = document.getElementById('offerStatus');
+      try {
+        statusEl.textContent = 'Deleting offer...';
+        statusEl.style.color = '#ffa500';
+
+        const response = await fetch(`${API_BASE}/offers/latest`, { method: 'DELETE' });
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to delete offer');
+        }
+
+        document.getElementById('offerTitle').value = '';
+        document.getElementById('offerDetails').value = '';
+        document.getElementById('offerImagePreview').style.display = 'none';
+
+        statusEl.textContent = '✓ Offer deleted!';
+        statusEl.style.color = '#11b19b';
+
+        setTimeout(() => {
+          closeOfferEditor();
+        }, 1000);
+
+      } catch (error) {
+        console.error('Error deleting offer:', error);
+        statusEl.textContent = '❌ Error: ' + error.message;
+        statusEl.style.color = '#ff6b6b';
+      }
+    }
+
+    // View latest offer (for users)
+    async function viewLatestOffer(e) {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+      if (offerModalOpen) return;
+      offerModalOpen = true;
+      setOfferButtonDisabled(true);
+      
+      const modal = document.getElementById('offerModal');
+      const imageEl = document.getElementById('offerDisplayImage');
+      const textEl = document.getElementById('offerDisplayText');
+      const noOfferEl = document.getElementById('noOfferMessage');
+      const titleEl = document.getElementById('offerDisplayTitle');
+      const validityEl = document.getElementById('offerValidity');
+      
+      modal.style.display = 'flex';
+      textEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+      imageEl.style.display = 'none';
+      noOfferEl.style.display = 'none';
+      if (titleEl) titleEl.style.display = 'none';
+      if (validityEl) validityEl.style.display = 'none';
+
+      try {
+        const response = await fetch(`${API_BASE}/offers/latest`);
+        if (!response.ok) throw new Error('Failed to load offer');
+        const data = await response.json();
+        
+        if (data) {
+
+          const rawTitle = (data.title || '').trim();
+          if (titleEl && rawTitle) {
+            titleEl.textContent = rawTitle;
+            titleEl.style.display = 'block';
+          } else if (titleEl) {
+            titleEl.style.display = 'none';
+          }
+
+          const extracted = extractValidity(data.details || '');
+          if (validityEl && extracted.validity) {
+            validityEl.textContent = `⏳ ${extracted.validity}`;
+            validityEl.style.display = 'inline-block';
+          } else if (validityEl) {
+            validityEl.style.display = 'none';
+          }
+          
+          if (data.imageUrl) {
+            imageEl.src = data.imageUrl;
+            imageEl.style.display = 'block';
+          } else {
+            imageEl.style.display = 'none';
+          }
+          
+          const displayText = extracted.details || '';
+          
+          if (displayText) {
+            textEl.textContent = displayText;
+            noOfferEl.style.display = 'none';
+          } else {
+            textEl.textContent = '';
+            noOfferEl.style.display = 'block';
+          }
+        } else {
+          textEl.textContent = '';
+          noOfferEl.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error loading offer:', error);
+        textEl.textContent = '';
+        noOfferEl.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 15px; display: block;"></i>Error loading offer.<br>Please try again later.';
+        noOfferEl.style.display = 'block';
+      }
+    }
+
+    function closeOfferModal() {
+      document.getElementById('offerModal').style.display = 'none';
+      offerModalOpen = false;
+      setOfferButtonDisabled(false);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const offerModal = document.getElementById('offerModal');
+      if (event.target === offerModal) {
+        closeOfferModal();
+      }
+      const testimonialsModal = document.getElementById('testimonialsModal');
+      if (event.target === testimonialsModal) {
+        closeTestimonialsPopup();
+      }
+    };
+
+    window.onload = function() {
+      const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+      updateAdminUI(isAdmin);
     };
   </script>
 </body>

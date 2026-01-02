@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Services — Zumba with Pooh</title>
+  <meta name="description" content="Zumba Fitness, Personal Training, Zumba + PT, class timings, and complete wellness support at Zumba With Pooh." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root{
+      --pink:#ff0080; --pink-2:#ff66b2; --bg:#0b0b0b; --muted:#ffd6ec;
+      --gradient: linear-gradient(135deg, var(--pink), var(--pink-2));
+      --shadow: 0 8px 32px rgba(255,0,128,0.3);
+      --card: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.12);
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:'Inter', system-ui, Arial;
+      font-size:18px;
+      color:#fff;
+      background: radial-gradient(1200px 600px at 50% -100px, rgba(255,0,128,0.22), rgba(0,0,0,0) 60%),
+                  radial-gradient(900px 500px at 10% 10%, rgba(255,102,178,0.14), rgba(0,0,0,0) 55%),
+                  var(--bg);
+    }
+
+    /* Nav (same as site) */
+    nav{
+      background: rgba(0,0,0,0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding:0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-container{
+      max-width:1200px;
+      margin:0 auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:15px 20px;
+    }
+    .nav-logo{
+      color:var(--pink);
+      font-size:1.5rem;
+      font-weight:700;
+      text-decoration:none;
+    }
+    .nav-links{
+      display:flex;
+      gap:20px;
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+    .nav-links a{
+      color:#fff;
+      text-decoration:none;
+      font-weight:500;
+      transition: color 0.3s ease;
+    }
+    .nav-links a:hover{ color:var(--pink); }
+    .nav-links a.active{ color:var(--pink); }
+
+    .hamburger{
+      display:none;
+      background:none;
+      border:none;
+      color:#fff;
+      font-size:1.5rem;
+      cursor:pointer;
+    }
+    .sidebar{
+      display:none;
+      position:fixed;
+      left:-250px;
+      top:0;
+      width:250px;
+      height:100%;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      transition:left 0.3s ease;
+      padding:20px;
+    }
+    .sidebar.open{ left:0; }
+    .sidebar-links{ list-style:none; padding:0; margin:0; }
+    .sidebar-links li{ margin-bottom:20px; }
+    .sidebar-links a{
+      color:#fff;
+      text-decoration:none;
+      font-weight:500;
+      font-size:1.1rem;
+      transition: color 0.3s ease;
+    }
+    .sidebar-links a:hover{ color:var(--pink); }
+    .close-btn{
+      position:absolute;
+      top:10px;
+      right:10px;
+      background:none;
+      border:none;
+      color:#fff;
+      font-size:1.5rem;
+      cursor:pointer;
+    }
+
+    /* Testimonials modal (same UX as other pages) */
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.75); z-index:2000; }
+    .modal-content{
+      width:min(520px, 92vw);
+      background: rgba(0,0,0,0.92);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      text-align:center;
+      position:relative;
+    }
+    .modal-content h2{ margin:0 0 14px; color: var(--pink); text-shadow: 0 0 18px rgba(255,0,128,0.45); }
+    .modal-buttons{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .modal-buttons button{
+      border:none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight:700;
+      color:#fff;
+      background: var(--gradient);
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(255,0,128,0.22);
+    }
+    .modal-buttons button:hover{ filter: brightness(1.05); }
+    .close{
+      position:absolute;
+      top: 10px;
+      right: 12px;
+      font-size: 1.6rem;
+      cursor:pointer;
+      color:#fff;
+      opacity:0.9;
+    }
+
+    /* Page layout */
+    .wrap{ max-width: 1100px; margin: 0 auto; padding: 22px 18px 40px; }
+
+    .hero{
+      padding: 26px 18px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,0,128,0.10), rgba(0,0,0,0.30));
+      box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+      text-align:center;
+      overflow:hidden;
+      position:relative;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(600px 240px at 50% 0%, rgba(255,0,128,0.22), rgba(0,0,0,0) 70%);
+      pointer-events:none;
+    }
+    .hero h1{
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 24px rgba(255,0,128,0.35);
+      position:relative;
+      z-index:1;
+    }
+    .hero .tag{
+      margin: 10px auto 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 1.15rem;
+      line-height: 1.7;
+      position:relative;
+      z-index:1;
+    }
+
+    .grid{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .panel{
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.30);
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin: 18px 0 10px;
+      font-size: 1.6rem;
+      color: #fff;
+      font-weight: 800;
+      text-shadow: 0 0 14px rgba(255,0,128,0.25);
+    }
+    .section-title i{ color: var(--pink); }
+
+    .muted{ color: var(--muted); line-height: 1.8; }
+
+    .programs{ grid-column: 1 / -1; }
+    .program-cards{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .program{
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,0,128,0.08), rgba(0,0,0,0.25));
+    }
+    .program h3{ margin: 0 0 8px; font-size: 1.25rem; }
+    .program .sub{ margin: 0 0 10px; color: var(--muted); font-weight: 600; }
+
+    .session{ grid-column: 1 / -1; }
+    .steps{ margin: 12px auto 0; max-width: 820px; display:grid; gap: 10px; }
+    .step{
+      display:flex;
+      align-items:flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.28);
+    }
+    .step .badge{
+      min-width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: var(--gradient);
+      box-shadow: 0 10px 18px rgba(255,0,128,0.22);
+      font-weight: 900;
+    }
+    .step b{ color:#fff; }
+
+    .benefits{ grid-column: 1 / -1; }
+    .checklist{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 14px;
+      margin-top: 12px;
+    }
+    .check{
+      display:flex;
+      align-items:flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+    .check i{ color: var(--pink); margin-top: 3px; }
+
+    .timings{ grid-column: 1 / -1; }
+    .time-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .time-card{
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(0,0,0,0.25);
+    }
+    .time-card h4{ margin: 0 0 10px; color: #fff; }
+    .time-card ul{ margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 12px;
+    }
+    .pill i{ color: var(--pink); }
+
+    .why{ grid-column: 1 / -1; }
+    .why ul{ margin: 10px auto 0; max-width: 820px; color: var(--muted); line-height: 1.9; padding-left: 20px; }
+
+    .cta{
+      grid-column: 1 / -1;
+      margin-top: 16px;
+      text-align:center;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: linear-gradient(135deg, rgba(255,0,128,0.12), rgba(0,0,0,0.25));
+    }
+    .cta b{ color:#fff; }
+
+    footer{
+      padding: 15px 20px;
+      background: rgba(0,0,0,0.9);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align:center;
+    }
+    .footer-content{
+      display:flex;
+      justify-content:center;
+      gap: 30px;
+      flex-wrap:wrap;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .footer-item{ display:flex; align-items:center; gap: 8px; }
+    .footer-item i{ color: var(--pink); }
+
+    @media (max-width: 900px){
+      .program-cards{ grid-template-columns: 1fr; }
+      .checklist{ grid-template-columns: 1fr; }
+      .time-grid{ grid-template-columns: 1fr; }
+    }
+    @media (max-width: 780px){
+      .hamburger{ display:block; }
+      .nav-links{ display:none; }
+      .sidebar{ display:block; }
+      .wrap{ padding-top: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">Zumba with Pooh</a>
+      <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html" class="active">Services</a></li>
+        <li><a href="#" onclick="openTestimonialsPopup()">Testimonials</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="branch1.html">Branch 1</a></li>
+        <li><a href="branch2.html">Branch 2</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="sidebar" id="sidebar">
+    <button class="close-btn" onclick="toggleSidebar()">&times;</button>
+    <ul class="sidebar-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="#" onclick="openTestimonialsPopup()">Testimonials</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="branch1.html">Branch 1</a></li>
+      <li><a href="branch2.html">Branch 2</a></li>
+    </ul>
+  </div>
+
+  <!-- Testimonials Modal -->
+  <div id="testimonialsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeTestimonialsPopup()">&times;</span>
+      <h2>Choose Testimonial Type</h2>
+      <div class="modal-buttons">
+        <button onclick="window.open('https://share.google/jzNWww9OwAIvt4YhK', '_blank')">Written Reviews</button>
+        <button onclick="window.location.href='video-reviews.html'">Video Reviews</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="hero">
+      <h1>✨ Our Services</h1>
+      <p class="tag"><b>Fitness made fun, effective & inclusive</b></p>
+      <p class="tag">At <b>Zumba With Pooh</b>, fitness is not just about exercise — it’s about <b>energy, confidence, and consistency</b>.
+        Our programs support <b>weight loss, strength, flexibility</b>, and overall wellness for every individual.</p>
+    </section>
+
+    <div class="grid">
+      <section class="panel programs">
+        <div class="section-title"><i class="fas fa-star"></i> Programs</div>
+        <div class="program-cards">
+          <div class="program">
+            <h3>💃 ZUMBA FITNESS</h3>
+            <p class="sub">Dance. Sweat. Repeat.</p>
+            <p class="muted">Energetic dance workouts that turn fitness into a celebration. Burn calories without feeling like you’re working out.</p>
+          </div>
+          <div class="program">
+            <h3>🏋️ PERSONAL TRAINING (PT)</h3>
+            <p class="sub">Focused attention for focused goals</p>
+            <p class="muted">Ideal for individual guidance, posture correction, and faster progress with expert supervision. Available in morning and evening slots.</p>
+          </div>
+          <div class="program">
+            <h3>🔥 ZUMBA + PT</h3>
+            <p class="sub">One routine. Complete transformation.</p>
+            <p class="muted">High-energy Zumba + personalized training support for strength, stamina, and fat loss together — perfect for visible and sustainable results.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel session">
+        <div class="section-title"><i class="fas fa-music"></i> Zumba Fitness</div>
+        <p class="muted" style="text-align:center; margin: 0;">What a session looks like</p>
+        <div class="steps">
+          <div class="step"><div class="badge">1</div><div><b>Warm-up</b>: 15–20 minutes</div></div>
+          <div class="step"><div class="badge">2</div><div><b>Floor Workout</b> (Abs | Sides | Thighs | Arms): 20–25 minutes</div></div>
+          <div class="step"><div class="badge">3</div><div><b>Zumba Dance Routine</b>: 40 minutes (10–12 power-packed songs)</div></div>
+          <div class="step"><div class="badge">4</div><div><b>Cool-down & Stretching</b>: 5–8 minutes</div></div>
+        </div>
+      </section>
+
+      <section class="panel benefits">
+        <div class="section-title"><i class="fas fa-heart"></i> What You Get In Every Program</div>
+        <p class="muted" style="text-align:center; margin: 0;">Complete fitness — no matter what you choose</p>
+        <div class="checklist">
+          <div class="check"><i class="fas fa-check-circle"></i><div>Functional Training</div></div>
+          <div class="check"><i class="fas fa-check-circle"></i><div>Traditional Strength Training</div></div>
+          <div class="check"><i class="fas fa-check-circle"></i><div>Daily Body-Weight Workouts</div></div>
+          <div class="check"><i class="fas fa-check-circle"></i><div>Core & Targeted Muscle Training</div></div>
+          <div class="check"><i class="fas fa-check-circle"></i><div>Diet Chart Guidance</div></div>
+          <div class="check"><i class="fas fa-check-circle"></i><div>Consistent Workout & Progress Support</div></div>
+          <div class="check"><i class="fas fa-check-circle"></i><div>Cross Fit</div></div>
+          <div class="check"><i class="fas fa-check-circle"></i><div>Power Yoga</div></div>
+          <div class="check"><i class="fas fa-check-circle"></i><div>Pilates</div></div>
+        </div>
+        <div class="pill"><i class="fas fa-sparkles"></i> We focus on total wellness, not just workouts.</div>
+      </section>
+
+      <section class="panel timings">
+        <div class="section-title"><i class="fas fa-clock"></i> Class Timings</div>
+        <p class="muted" style="text-align:center; margin: 0;">Designed for busy lifestyles</p>
+        <div class="time-grid">
+          <div class="time-card">
+            <h4>Morning Batches</h4>
+            <ul>
+              <li>8:30 AM – 10:00 AM</li>
+              <li>8:00 AM – 9:30 AM</li>
+            </ul>
+          </div>
+          <div class="time-card">
+            <h4>Evening Batches</h4>
+            <ul>
+              <li>6:30 PM – 8:30 PM</li>
+              <li>7:00 PM – 9:00 PM</li>
+              <li>8:30 PM – 10:00 PM</li>
+            </ul>
+          </div>
+          <div class="time-card">
+            <h4>Personal Training Slots</h4>
+            <ul>
+              <li>Morning: 10:00 AM – 11:00 AM</li>
+              <li>Evening: 8:00 PM – 9:00 PM</li>
+            </ul>
+          </div>
+        </div>
+        <div class="pill"><i class="fas fa-calendar"></i> Monday to Friday</div>
+        <div class="pill"><i class="fas fa-ban"></i> Saturday & Sunday — Closed</div>
+      </section>
+
+      <section class="panel why">
+        <div class="section-title"><i class="fas fa-award"></i> Why Zumba With Pooh?</div>
+        <ul>
+          <li>Fun, motivating & supportive environment</li>
+          <li>Beginner-friendly & result-oriented sessions</li>
+          <li>Holistic fitness approach</li>
+          <li>Experienced guidance across two branches</li>
+          <li>A community that keeps you consistent</li>
+        </ul>
+      </section>
+
+      <section class="cta">
+        <div class="section-title" style="margin:0 0 8px"><i class="fas fa-bolt"></i> Ready to Move With Us?</div>
+        <p class="muted" style="margin:0">Dance with confidence. Train with purpose. Transform your lifestyle.<br>
+          Join <b>Zumba With Pooh</b> and make fitness a happy habit.</p>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-item">
+        <i class="fas fa-phone"></i>
+        <span>8976593179</span>
+      </div>
+      <div class="footer-item">
+        <i class="fab fa-instagram"></i>
+        <a href="https://www.instagram.com/zumbawithpooh/" target="_blank" style="color: var(--muted); text-decoration: none;">@zumbawithpooh</a>
+      </div>
+      <div class="footer-item">
+        <i class="fas fa-envelope"></i>
+        <span>info@zumbawithpooh.com</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    function openTestimonialsPopup() {
+      document.getElementById('testimonialsModal').style.display = 'flex';
+    }
+
+    function closeTestimonialsPopup() {
+      document.getElementById('testimonialsModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const testimonialsModal = document.getElementById('testimonialsModal');
+      if (event.target === testimonialsModal) closeTestimonialsPopup();
+    };
+  </script>
+</body>
+</html>

@@ -22,6 +22,7 @@
     background: linear-gradient(180deg, #070407, var(--bg));
     color: #fff;
     font-family: 'Inter', Arial;
+    font-size: 18px;
     scroll-behavior: smooth;
   }
   nav {
@@ -161,8 +162,15 @@
     align-items: stretch;
     margin-bottom: 18px;
   }
-  .pair img {
+  .pair .image-slot {
     width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .pair .image-slot img {
+    width: 100%;
     height: 56vh;
     object-fit: contain;
     border-radius: 12px;
@@ -178,6 +186,46 @@
     color: #ffdff6;
     font-size: 1rem;
     font-weight: 500;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+  }
+  .meta-item label {
+    color: #ffdff6;
+    white-space: nowrap;
+  }
+  .meta-item input {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 5px;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    min-width: 80px;
+    width: auto;
+  }
+  .meta-item input[id^="name-"] {
+    min-width: 150px;
+    width: auto;
+    max-width: 250px;
+  }
+  .meta-item input:focus {
+    outline: none;
+    border-color: var(--pink);
+  }
+  .meta-item input:disabled {
+    background: transparent;
+    border: none;
+    color: #ffdff6;
   }
   .controls {
     display: flex;
@@ -251,11 +299,13 @@
   }
   @media(max-width: 900px) {
     .pair { flex-direction: column; }
-    .pair img { height: 44vh; width: 100%; object-fit: contain; }
+    .pair .image-slot { width: 100%; }
+    .pair .image-slot img { height: 44vh; width: 100%; object-fit: contain; }
     .nav-container { flex-direction: column; gap: 10px; }
     .nav-links { gap: 15px; }
     .controls { flex-direction: column; align-items: center; }
     .btn { width: 200px; }
+    .meta { flex-direction: column; gap: 10px; }
   }
   footer {
     background: rgba(0,0,0,0.9);
@@ -309,7 +359,7 @@
     margin-bottom: 20px;
     color: var(--pink);
   }
-  .upload-btn {
+  .upload-btn, .save-btn {
     background: var(--gradient);
     border: none;
     color: #fff;
@@ -318,9 +368,61 @@
     font-size: 1rem;
     cursor: pointer;
     transition: transform 0.3s ease;
+    margin: 5px;
   }
-  .upload-btn:hover {
+  .upload-btn:hover, .save-btn:hover {
     transform: scale(1.05);
+  }
+  .save-btn {
+    background: linear-gradient(135deg, #11b19b, #0d8a79);
+  }
+  .admin-panel {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
+    display: none;
+  }
+  .admin-panel.show {
+    display: block;
+  }
+  .admin-panel p {
+    color: var(--pink);
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+  }
+  .image-upload-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  .image-slot {
+    position: relative;
+  }
+  .image-slot input[type="file"] {
+    display: none;
+  }
+  .image-slot .upload-label {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.1);
+    border: 1px dashed rgba(255,255,255,0.3);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #fff;
+    transition: all 0.3s ease;
+  }
+  .image-slot .upload-label:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: var(--pink);
   }
   .logout-btn {
     background: rgba(255,255,255,0.1);
@@ -423,7 +525,10 @@
     .pair {
       flex-direction: column;
     }
-    .pair img {
+    .pair .image-slot {
+      width: 100%;
+    }
+    .pair .image-slot img {
       height: 40vh;
       width: 100%;
       object-fit: contain;
@@ -470,7 +575,7 @@
     main {
       padding: 20px 10px;
     }
-    .pair img {
+    .pair .image-slot img {
       height: 30vh;
       object-fit: contain;
     }
@@ -514,9 +619,9 @@
   </div>
 </nav>
 
-<div style="position: absolute; top: 10px; right: 20px; z-index: 10;">
-  <button class="admin-btn" id="adminBtn" onclick="adminLogin()">Admin</button>
-  <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" style="display: none;">Logout</button>
+<div class="admin-panel" id="adminPanel">
+  <p>✓ Logged in as Admin</p>
+  <button class="logout-btn" onclick="adminLogout()">Logout</button>
 </div>
 
 <!-- Testimonials Modal -->
@@ -545,142 +650,353 @@
 
 <header>
   <h1>Branch 1 — Transformations</h1>
-  <p>Opened in: <strong>[BRANCH 1 YEAR]</strong> · Address: <strong>[BRANCH 1 ADDRESS]</strong></p>
+  <p>Opened in: <strong>2016</strong> · Address: <strong>Shop No. 1, Sant Harchuram Apartment, Venus Chowk, Near Dominos, Opp. Criticare Hospital, Ulhasnagar - 421 004.</strong></p>
 </header>
 
 <main>
   <div class="upload-section" id="uploadSection">
-    <h2>Upload Transformation Images</h2>
-    <p>Upload before and after images for Branch 1 transformations.</p>
-    <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
-    <button class="upload-btn" onclick="document.getElementById('imageInput').click()">Choose Images</button>
+    <h2>Admin Panel - Manage Transformations</h2>
+    <p>Upload images and edit transformation details for Branch 1.</p>
+    <p style="color: #ffa500; font-size: 0.9rem;">Tip: Click on any card's image upload buttons to add before/after photos. Edit names and weights directly on the cards below.</p>
+    <button id="saveAllBtn" class="btn admin-only" style="margin-top: 16px; display:none;" onclick="saveAllCardData()">💾 Save All Changes</button>
+    <p id="saveStatus" style="margin-top: 8px; color: #11b19b;"></p>
     <p id="uploadStatus" style="margin-top: 10px; color: var(--pink);"></p>
   </div>
 
   <!-- Repeat 10 cards; replace BR1_BEFOREx.jpg and BR1_AFTERx.jpg with your images -->
   <!-- CARD 1 -->
-  <section class="card" aria-labelledby="t1">
+  <section class="card" aria-labelledby="t1" data-card="1">
     <div class="pair" id="t1">
-      <img src="BR1_BEFORE1.jpg" alt="Before 1 (replace)">
-      <img src="BR1_AFTER1.jpg" alt="After 1 (replace)">
+      <div class="image-slot">
+        <img src="BR1_BEFORE1.jpg" alt="Before 1" id="before-img-1">
+        <input type="file" id="before-input-1" accept="image/*" onchange="handleImageUpload(this, 'before', 1)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-1').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER1.jpg" alt="After 1" id="after-img-1">
+        <input type="file" id="after-input-1" accept="image/*" onchange="handleImageUpload(this, 'after', 1)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-1').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-1" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-1" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-1" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t2').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 2 -->
-  <section class="card" aria-labelledby="t2">
+  <section class="card" aria-labelledby="t2" data-card="2">
     <div class="pair" id="t2">
-      <img src="BR1_BEFORE2.jpg" alt="Before 2">
-      <img src="BR1_AFTER2.jpg" alt="After 2">
+      <div class="image-slot">
+        <img src="BR1_BEFORE2.jpg" alt="Before 2" id="before-img-2">
+        <input type="file" id="before-input-2" accept="image/*" onchange="handleImageUpload(this, 'before', 2)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-2').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER2.jpg" alt="After 2" id="after-img-2">
+        <input type="file" id="after-input-2" accept="image/*" onchange="handleImageUpload(this, 'after', 2)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-2').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-2" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-2" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-2" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t3').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 3 -->
-  <section class="card" aria-labelledby="t3">
+  <section class="card" aria-labelledby="t3" data-card="3">
     <div class="pair" id="t3">
-      <img src="BR1_BEFORE3.jpg" alt="Before 3">
-      <img src="BR1_AFTER3.jpg" alt="After 3">
+      <div class="image-slot">
+        <img src="BR1_BEFORE3.jpg" alt="Before 3" id="before-img-3">
+        <input type="file" id="before-input-3" accept="image/*" onchange="handleImageUpload(this, 'before', 3)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-3').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER3.jpg" alt="After 3" id="after-img-3">
+        <input type="file" id="after-input-3" accept="image/*" onchange="handleImageUpload(this, 'after', 3)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-3').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-3" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-3" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-3" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t4').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 4 -->
-  <section class="card" aria-labelledby="t4">
+  <section class="card" aria-labelledby="t4" data-card="4">
     <div class="pair" id="t4">
-      <img src="BR1_BEFORE4.jpg" alt="Before 4">
-      <img src="BR1_AFTER4.jpg" alt="After 4">
+      <div class="image-slot">
+        <img src="BR1_BEFORE4.jpg" alt="Before 4" id="before-img-4">
+        <input type="file" id="before-input-4" accept="image/*" onchange="handleImageUpload(this, 'before', 4)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-4').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER4.jpg" alt="After 4" id="after-img-4">
+        <input type="file" id="after-input-4" accept="image/*" onchange="handleImageUpload(this, 'after', 4)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-4').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-4" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-4" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-4" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t5').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 5 -->
-  <section class="card" aria-labelledby="t5">
+  <section class="card" aria-labelledby="t5" data-card="5">
     <div class="pair" id="t5">
-      <img src="BR1_BEFORE5.jpg" alt="Before 5">
-      <img src="BR1_AFTER5.jpg" alt="After 5">
+      <div class="image-slot">
+        <img src="BR1_BEFORE5.jpg" alt="Before 5" id="before-img-5">
+        <input type="file" id="before-input-5" accept="image/*" onchange="handleImageUpload(this, 'before', 5)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-5').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER5.jpg" alt="After 5" id="after-img-5">
+        <input type="file" id="after-input-5" accept="image/*" onchange="handleImageUpload(this, 'after', 5)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-5').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-5" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-5" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-5" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t6').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 6 -->
-  <section class="card" aria-labelledby="t6">
+  <section class="card" aria-labelledby="t6" data-card="6">
     <div class="pair" id="t6">
-      <img src="BR1_BEFORE6.jpg" alt="Before 6">
-      <img src="BR1_AFTER6.jpg" alt="After 6">
+      <div class="image-slot">
+        <img src="BR1_BEFORE6.jpg" alt="Before 6" id="before-img-6">
+        <input type="file" id="before-input-6" accept="image/*" onchange="handleImageUpload(this, 'before', 6)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-6').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER6.jpg" alt="After 6" id="after-img-6">
+        <input type="file" id="after-input-6" accept="image/*" onchange="handleImageUpload(this, 'after', 6)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-6').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-6" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-6" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-6" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t7').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 7 -->
-  <section class="card" aria-labelledby="t7">
+  <section class="card" aria-labelledby="t7" data-card="7">
     <div class="pair" id="t7">
-      <img src="BR1_BEFORE7.jpg" alt="Before 7">
-      <img src="BR1_AFTER7.jpg" alt="After 7">
+      <div class="image-slot">
+        <img src="BR1_BEFORE7.jpg" alt="Before 7" id="before-img-7">
+        <input type="file" id="before-input-7" accept="image/*" onchange="handleImageUpload(this, 'before', 7)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-7').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER7.jpg" alt="After 7" id="after-img-7">
+        <input type="file" id="after-input-7" accept="image/*" onchange="handleImageUpload(this, 'after', 7)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-7').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-7" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-7" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-7" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t8').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 8 -->
-  <section class="card" aria-labelledby="t8">
+  <section class="card" aria-labelledby="t8" data-card="8">
     <div class="pair" id="t8">
-      <img src="BR1_BEFORE8.jpg" alt="Before 8">
-      <img src="BR1_AFTER8.jpg" alt="After 8">
+      <div class="image-slot">
+        <img src="BR1_BEFORE8.jpg" alt="Before 8" id="before-img-8">
+        <input type="file" id="before-input-8" accept="image/*" onchange="handleImageUpload(this, 'before', 8)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-8').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER8.jpg" alt="After 8" id="after-img-8">
+        <input type="file" id="after-input-8" accept="image/*" onchange="handleImageUpload(this, 'after', 8)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-8').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-8" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-8" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-8" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t9').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 9 -->
-  <section class="card" aria-labelledby="t9">
+  <section class="card" aria-labelledby="t9" data-card="9">
     <div class="pair" id="t9">
-      <img src="BR1_BEFORE9.jpg" alt="Before 9">
-      <img src="BR1_AFTER9.jpg" alt="After 9">
+      <div class="image-slot">
+        <img src="BR1_BEFORE9.jpg" alt="Before 9" id="before-img-9">
+        <input type="file" id="before-input-9" accept="image/*" onchange="handleImageUpload(this, 'before', 9)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-9').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER9.jpg" alt="After 9" id="after-img-9">
+        <input type="file" id="after-input-9" accept="image/*" onchange="handleImageUpload(this, 'after', 9)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-9').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-9" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-9" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-9" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
       <button class="btn ghost" onclick="document.getElementById('t10').scrollIntoView({behavior:'smooth'})">Next Transformation ↓</button>
     </div>
   </section>
 
   <!-- CARD 10 -->
-  <section class="card" aria-labelledby="t10">
+  <section class="card" aria-labelledby="t10" data-card="10">
     <div class="pair" id="t10">
-      <img src="BR1_BEFORE10.jpg" alt="Before 10">
-      <img src="BR1_AFTER10.jpg" alt="After 10">
+      <div class="image-slot">
+        <img src="BR1_BEFORE10.jpg" alt="Before 10" id="before-img-10">
+        <input type="file" id="before-input-10" accept="image/*" onchange="handleImageUpload(this, 'before', 10)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('before-input-10').click()">📷 Upload Before</label>
+      </div>
+      <div class="image-slot">
+        <img src="BR1_AFTER10.jpg" alt="After 10" id="after-img-10">
+        <input type="file" id="after-input-10" accept="image/*" onchange="handleImageUpload(this, 'after', 10)" style="display:none;">
+        <label class="upload-label admin-only" onclick="document.getElementById('after-input-10').click()">📷 Upload After</label>
+      </div>
     </div>
-    <div class="meta">Name: <strong>________</strong> • Before Weight: <strong>____</strong> • After Weight: <strong>____</strong></div>
+    <div class="meta">
+      <div class="meta-item">
+        <label>Name:</label>
+        <input type="text" id="name-10" placeholder="Enter name" disabled>
+      </div>
+      <div class="meta-item">
+        <label>Before Weight:</label>
+        <input type="text" id="before-weight-10" placeholder="e.g. 80kg" disabled>
+      </div>
+      <div class="meta-item">
+        <label>After Weight:</label>
+        <input type="text" id="after-weight-10" placeholder="e.g. 65kg" disabled>
+      </div>
+    </div>
     <div class="controls">
-      <button class="btn ghost" onclick="document.getElementById('branch2').scrollIntoView({behavior:'smooth'})">Scroll to Branch 2 ↓</button>
+      <button class="btn ghost" onclick="location.href='index.html'">Back to Home ↑</button>
     </div>
   </section>
 
-  <!-- Quick navigation to Branch 2 page -->
+  <!-- Quick navigation back to home -->
   <div style="margin:28px;text-align:center">
-    <a class="goto" href="branch2.html">Now… Let's See Branch 2 Transformations 🔥</a>
+    <a class="goto" href="index.html">Back to Home Page 🏠</a>
   </div>
 </main>
 
@@ -701,7 +1017,23 @@
   </div>
 </footer>
 
+
+
 <script>
+  // No Firestore, Cloudinary only
+  // Cloudinary Configuration
+  const CLOUDINARY_CLOUD_NAME = 'dydajkqdk';
+  const CLOUDINARY_UPLOAD_PRESET = 'ZumbaWithPooh';
+  const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+  const BRANCH_KEY = 'branch1';
+  // Backend API
+  // - Local dev: http://localhost:5000/api
+  // - Deployed (required for GitHub Pages QR link): set your public API base below
+  const DEPLOYED_API_BASE = 'https://zumbawithpooh.onrender.com/api';
+  const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000/api'
+    : DEPLOYED_API_BASE;
+  
   function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('open');
@@ -715,99 +1047,216 @@
     document.getElementById('testimonialsModal').style.display = 'none';
   }
 
-  function adminLogin() {
-    const password = prompt('Enter admin password:');
-    if (password === 'poohadmin') {
-      localStorage.setItem('adminLoggedIn', 'true');
-      document.getElementById('uploadSection').style.display = 'block';
-      document.getElementById('adminBtn').style.display = 'none';
-      document.getElementById('logoutBtn').style.display = 'inline-block';
-      alert('Admin access granted!');
-    } else {
-      alert('Incorrect password.');
-    }
-  }
-
   function adminLogout() {
     localStorage.removeItem('adminLoggedIn');
-    document.getElementById('uploadSection').style.display = 'none';
-    document.getElementById('adminBtn').style.display = 'inline-block';
-    document.getElementById('logoutBtn').style.display = 'none';
-    alert('Logged out successfully!');
+    location.reload();
   }
 
-  window.onload = function() {
-    if (localStorage.getItem('adminLoggedIn') === 'true') {
-      document.getElementById('uploadSection').style.display = 'block';
-      document.getElementById('adminBtn').style.display = 'none';
-      document.getElementById('logoutBtn').style.display = 'inline-block';
-    }
-  };
-
-  const maxImages = 20; // 10 before + 10 after
-
-  // Function to convert file to base64
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
+  // Check admin status and update UI
+  function checkAdminStatus() {
+    const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+    document.getElementById('adminPanel').classList.toggle('show', isAdmin);
+    document.getElementById('uploadSection').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('saveAllBtn').style.display = isAdmin ? 'inline-block' : 'none';
+    document.querySelectorAll('.admin-only').forEach(el => {
+      el.style.display = isAdmin ? 'inline-block' : 'none';
+    });
+    document.querySelectorAll('.meta-item input').forEach(input => {
+      input.disabled = !isAdmin;
     });
   }
 
-  // Load saved images from localStorage
-  function loadSavedImages() {
-    const images = document.querySelectorAll('main .pair img');
-    for (let i = 0; i < maxImages; i++) {
-      const savedImage = localStorage.getItem(`branch1_image_${i}`);
-      if (savedImage) {
-        images[i].src = savedImage;
-        images[i].alt = `Uploaded ${i + 1}`;
+  // Collect all card data (images, names, weights)
+  function collectAllCardData() {
+    const cards = [];
+    for (let i = 1; i <= 10; i++) {
+      cards.push({
+        cardNum: i,
+        beforeImg: document.getElementById(`before-img-${i}`).src,
+        afterImg: document.getElementById(`after-img-${i}`).src,
+        name: document.getElementById(`name-${i}`).value,
+        beforeWeight: document.getElementById(`before-weight-${i}`).value,
+        afterWeight: document.getElementById(`after-weight-${i}`).value
+      });
+    }
+    return cards;
+  }
+
+  // Save all card data to backend
+  async function saveAllCardData({ showStatus = true } = {}) {
+    const saveStatus = document.getElementById('saveStatus');
+    if (showStatus && saveStatus) {
+      saveStatus.textContent = 'Saving all card data...';
+      saveStatus.style.color = '#ffa500';
+    }
+    const cards = collectAllCardData();
+    try {
+      const response = await fetch(`${API_BASE}/save-cards`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ branch: BRANCH_KEY, cards })
+      });
+      if (!response.ok) {
+        const err = await response.text();
+        if (showStatus && saveStatus) {
+          saveStatus.textContent = '❌ Failed to save: ' + err;
+          saveStatus.style.color = '#ff6b6b';
+        } else {
+          console.error('Failed to save:', err);
+        }
+        return false;
       }
+      if (showStatus && saveStatus) {
+        saveStatus.textContent = '✓ All changes saved!';
+        saveStatus.style.color = '#11b19b';
+      }
+      return true;
+    } catch (e) {
+      if (showStatus && saveStatus) {
+        saveStatus.textContent = '❌ Error: ' + (e.message || e);
+        saveStatus.style.color = '#ff6b6b';
+      } else {
+        console.error('Save error:', e);
+      }
+      return false;
+    }
+    if (showStatus && saveStatus) {
+      setTimeout(() => { saveStatus.textContent = ''; }, 3000);
     }
   }
 
-  document.getElementById('imageInput').addEventListener('change', async function(event) {
-    const files = event.target.files;
-    const images = document.querySelectorAll('main .pair img');
-    
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      if (file && file.type.startsWith('image/')) {
-        // Find the next empty slot
-        let slot = 0;
-        while (localStorage.getItem(`branch1_image_${slot}`) && slot < maxImages) {
-          slot++;
-        }
-        if (slot < maxImages) {
-          try {
-            const base64Data = await fileToBase64(file);
-            images[slot].src = base64Data;
-            images[slot].alt = `Uploaded ${slot + 1}`;
-            
-            // Save to localStorage
-            localStorage.setItem(`branch1_image_${slot}`, base64Data);
-          } catch (error) {
-            console.error('Error converting file to base64:', error);
-          }
-        }
-      }
-    }
-    
-    if (files.length > 0) {
-      document.getElementById('uploadStatus').textContent = `${files.length} image(s) processed.`;
-      setTimeout(() => {
-        document.getElementById('uploadStatus').textContent = '';
-      }, 3000);
-    }
-    
-    // Reset the input so the same file can be selected again if needed
-    event.target.value = '';
-  });
+  function setupAutoSaveForMetaInputs() {
+    const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+    if (!isAdmin) return;
 
-  // Load saved images when page loads
-  window.addEventListener('load', loadSavedImages);
+    const inputs = document.querySelectorAll('.meta-item input');
+    let timer = null;
+
+    const scheduleSave = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        saveAllCardData({ showStatus: false });
+      }, 800);
+    };
+
+    inputs.forEach((input) => {
+      input.addEventListener('input', scheduleSave);
+      input.addEventListener('change', () => saveAllCardData({ showStatus: false }));
+      input.addEventListener('blur', () => saveAllCardData({ showStatus: false }));
+    });
+  }
+
+  // Load card data from backend
+  async function loadAllCardData() {
+    try {
+      const response = await fetch(`${API_BASE}/load-cards?branch=${BRANCH_KEY}`);
+      if (!response.ok) return;
+      const data = await response.json();
+      // Always clear and set all fields for all users
+      for (let i = 1; i <= 10; i++) {
+        const card = (data.cards || []).find(c => c.cardNum === i) || {};
+        document.getElementById(`before-img-${i}`).src = card.beforeImg || `BR1_BEFORE${i}.jpg`;
+        document.getElementById(`after-img-${i}`).src = card.afterImg || `BR1_AFTER${i}.jpg`;
+        document.getElementById(`name-${i}`).value = card.name || '';
+        document.getElementById(`before-weight-${i}`).value = card.beforeWeight || '';
+        document.getElementById(`after-weight-${i}`).value = card.afterWeight || '';
+      }
+    } catch (e) {
+      // Optionally show error
+    }
+  }
+
+  // Handle image upload - upload to Cloudinary
+  async function handleImageUpload(input, type, cardNum) {
+    const file = input.files[0];
+    if (!file) return;
+    const statusEl = document.getElementById('uploadStatus');
+    try {
+      statusEl.textContent = `Uploading Card ${cardNum} ${type} image to Cloudinary...`;
+      statusEl.style.color = '#ffa500';
+      // Upload to Cloudinary
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', `${BRANCH_KEY}/${type}`);
+      formData.append('public_id', `${type}_${cardNum}_${Date.now()}`);
+      let response, data;
+      try {
+        response = await fetch(CLOUDINARY_UPLOAD_URL, {
+          method: 'POST',
+          body: formData
+        });
+      } catch (err) {
+        statusEl.textContent = '❌ Network error uploading to Cloudinary.';
+        statusEl.style.color = '#ff6b6b';
+        console.error('Cloudinary network error:', err);
+        return;
+      }
+      if (!response.ok) {
+        let errMsg = 'Cloudinary upload failed';
+        try {
+          data = await response.json();
+          if (data && data.error && data.error.message) errMsg += ': ' + data.error.message;
+        } catch {}
+        statusEl.textContent = '❌ ' + errMsg;
+        statusEl.style.color = '#ff6b6b';
+        console.error('Cloudinary upload error:', response.status, data);
+        return;
+      }
+      data = await response.json();
+      if (!data.secure_url) {
+        statusEl.textContent = '❌ Cloudinary did not return a URL.';
+        statusEl.style.color = '#ff6b6b';
+        console.error('Cloudinary response:', data);
+        return;
+      }
+      const downloadURL = data.secure_url;
+      statusEl.textContent = 'Image uploaded to Cloudinary.';
+      
+      // Update image display
+      const img = document.getElementById(`${type}-img-${cardNum}`);
+      if (img) {
+        img.src = downloadURL;
+      }
+
+      // Persist the updated image URLs into the backend so refresh keeps them.
+      const saved = await saveAllCardData();
+      if (!saved) {
+        statusEl.textContent = '⚠️ Image uploaded, but saving failed.';
+        statusEl.style.color = '#ffa500';
+        return;
+      }
+      
+      // No Firestore: skip meta data save
+      
+      statusEl.textContent = `✓ Card ${cardNum} ${type} image uploaded to cloud!`;
+      statusEl.style.color = '#11b19b';
+      
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      statusEl.textContent = `❌ Error: ${error.message || error}`;
+      statusEl.style.color = '#ff6b6b';
+    }
+    
+    input.value = '';
+    
+    setTimeout(() => {
+      statusEl.textContent = '';
+    }, 3000);
+  }
+
+  // Removed saveAllData (Firestore)
+
+  // Removed clearAllData (Firestore)
+
+  // Removed loadSavedData (Firestore)
+
+  // Initialize on page load
+  window.onload = function() {
+    checkAdminStatus();
+    loadAllCardData();
+    setupAutoSaveForMetaInputs();
+  };
 </script>
 
 </body>

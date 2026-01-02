@@ -16,6 +16,7 @@
   body {
     margin: 0;
     font-family: 'Inter', system-ui, Arial;
+    font-size: 18px;
     background: var(--bg);
     color: #fff;
     min-height: 100vh;
@@ -333,11 +334,6 @@
     </div>
   </nav>
 
-  <div style="position: absolute; top: 10px; right: 20px; z-index: 10;">
-    <button class="admin-btn" id="adminBtn" onclick="adminLogin()">Admin</button>
-    <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" style="display: none;">Logout</button>
-  </div>
-
   <div class="sidebar" id="sidebar">
     <button class="close-btn" onclick="toggleSidebar()">&times;</button>
     <ul class="sidebar-links">
@@ -402,12 +398,18 @@
       console.error('IndexedDB error:', event.target.error);
     };
 
-    // Function to save video to IndexedDB
-    function saveVideoToDB(slot, arrayBuffer, fileName, mimeType) {
+    // Function to save video to IndexedDB (now stores Cloudinary URL)
+    function saveVideoToDB(slot, arrayBuffer, fileName, mimeType, cloudinaryUrl = null) {
       return new Promise((resolve, reject) => {
         const transaction = db.transaction(['videos'], 'readwrite');
         const store = transaction.objectStore('videos');
-        const request = store.put({ id: slot, data: arrayBuffer, fileName: fileName, mimeType: mimeType });
+        const request = store.put({ 
+          id: slot, 
+          data: arrayBuffer, 
+          fileName: fileName, 
+          mimeType: mimeType,
+          cloudinaryUrl: cloudinaryUrl
+        });
 
         request.onsuccess = () => resolve();
         request.onerror = () => reject(request.error);
@@ -434,11 +436,19 @@
       for (let i = 0; i < maxVideos; i++) {
         loadVideoFromDB(i).then(videoData => {
           if (videoData) {
-            // Recreate blob URL from stored ArrayBuffer
-            const blob = new Blob([videoData.data], { type: videoData.mimeType });
-            const videoURL = URL.createObjectURL(blob);
-            addVideoToGrid(videoURL, videoData.fileName, false);
-            videoCount++;
+            let videoURL;
+            // Check if we have a Cloudinary URL (new method) or stored blob data (old method)
+            if (videoData.cloudinaryUrl) {
+              videoURL = videoData.cloudinaryUrl;
+            } else if (videoData.data) {
+              // Recreate blob URL from stored ArrayBuffer (legacy support)
+              const blob = new Blob([videoData.data], { type: videoData.mimeType });
+              videoURL = URL.createObjectURL(blob);
+            }
+            if (videoURL) {
+              addVideoToGrid(videoURL, videoData.fileName, false);
+              videoCount++;
+            }
           }
         }).catch(error => {
           console.error('Error loading video:', error);
@@ -502,10 +512,15 @@
       }
     };
 
+    // Cloudinary Configuration for Videos
+    const CLOUDINARY_CLOUD_NAME = 'dydajkqdk';
+    const CLOUDINARY_UPLOAD_PRESET = 'ZumbaWithPooh';
+    const CLOUDINARY_VIDEO_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`;
+
     document.getElementById('videoInput').addEventListener('change', async function(event) {
       const file = event.target.files[0];
       if (file && videoCount < maxVideos) {
-        // Check file size (limit to 100MB for IndexedDB)
+        // Check file size (limit to 100MB for Cloudinary free tier)
         const maxSize = 100 * 1024 * 1024; // 100MB in bytes
         if (file.size > maxSize) {
           document.getElementById('uploadStatus').textContent = 'Video file is too large. Please choose a file smaller than 100MB.';
@@ -513,12 +528,27 @@
         }
 
         try {
-          document.getElementById('uploadStatus').textContent = 'Processing video...';
+          document.getElementById('uploadStatus').textContent = 'Uploading video to Cloudinary...';
 
-          // Convert file to ArrayBuffer for IndexedDB storage
-          const arrayBuffer = await file.arrayBuffer();
-          const blob = new Blob([arrayBuffer], { type: file.type });
-          const videoURL = URL.createObjectURL(blob);
+          // Upload to Cloudinary
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+          formData.append('folder', 'video-reviews');
+          formData.append('public_id', `review_${Date.now()}`);
+          formData.append('resource_type', 'video');
+          
+          const response = await fetch(CLOUDINARY_VIDEO_UPLOAD_URL, {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) {
+            throw new Error('Cloudinary upload failed');
+          }
+          
+          const data = await response.json();
+          const videoURL = data.secure_url;
 
           // Find the next empty slot
           let slot = 0;
@@ -527,12 +557,12 @@
           }
 
           if (slot < maxVideos) {
-            // Save to IndexedDB
-            await saveVideoToDB(slot, arrayBuffer, file.name, file.type);
+            // Save Cloudinary URL to IndexedDB for persistence
+            await saveVideoToDB(slot, null, file.name, file.type, videoURL);
 
             addVideoToGrid(videoURL, file.name);
             videoCount++;
-            document.getElementById('uploadStatus').textContent = `Video ${videoCount} uploaded successfully!`;
+            document.getElementById('uploadStatus').textContent = `Video ${videoCount} uploaded to Cloudinary successfully!`;
             setTimeout(() => {
               document.getElementById('uploadStatus').textContent = '';
             }, 3000);
