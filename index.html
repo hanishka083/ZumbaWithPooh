@@ -4,8 +4,18 @@
 <meta name="google-site-verification" content="MEf2R63LxCOWOihWyQgNUwO1YRTy2SHTcdxLbBSUmVk" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MXR7GZX1T8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-MXR7GZX1T8');
+</script>
 <title>Zumba with Pooh — Landing</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
   :root{
@@ -19,10 +29,11 @@
     font-size: 18px;
     background: var(--bg);
     color: #fff;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   nav {
     background: rgba(0,0,0,0.9);
@@ -31,12 +42,18 @@
     padding: 0;
   }
   .nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 15px clamp(18px, 4vw, 48px);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    padding: 15px 20px;
+    column-gap: clamp(20px, 4vw, 36px);
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
   .hamburger {
     display: none;
@@ -91,15 +108,128 @@
     font-size: 1.5rem;
     cursor: pointer;
   }
+  body.intro-active {
+    overflow: hidden;
+  }
+  .intro-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4vh;
+    padding: 6vh 4vw;
+    background: radial-gradient(circle at center, rgba(255,0,128,0.2), rgba(0,0,0,0.94));
+    z-index: 2000;
+    overflow: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  .intro-title {
+    text-align: center;
+    font-family: 'Pacifico', 'Inter', system-ui;
+    font-size: clamp(2.8rem, 6vw, 5.2rem);
+    letter-spacing: 0.08em;
+    background: linear-gradient(90deg, #ffe3f4 0%, #ff9fd0 45%, #ff3f9e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: 0 0 35px rgba(255, 0, 128, 0.55);
+    animation: titleGlow 3.5s ease-in-out infinite;
+    padding: 0 15px;
+    z-index: 3;
+    line-height: 1.1;
+  }
+  .intro-title span {
+    display: block;
+    font-size: clamp(3.3rem, 7vw, 6rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .intro-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .intro-video {
+    position: relative;
+    z-index: 2;
+    width: min(96vw, 720px);
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    opacity: 0;
+    transform: translateX(-12%) scale(0.95);
+    filter: drop-shadow(0 0 35px rgba(255, 0, 128, 0.55));
+    animation: introHeroEnter 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .curtain {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 52%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.92) 0%, rgba(33,0,22,0.9) 35%, rgba(255,0,128,0.65) 100%);
+    z-index: 1;
+    box-shadow: 0 0 35px rgba(0,0,0,0.45);
+  }
+  .curtain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 55%);
+    mix-blend-mode: screen;
+    opacity: 0.6;
+  }
+  .curtain-left {
+    left: 0;
+    transform-origin: left;
+    animation: curtainOpenLeft 1.4s ease-out forwards;
+    animation-delay: 2.1s;
+  }
+  .curtain-right {
+    right: 0;
+    transform-origin: right;
+    animation: curtainOpenRight 1.4s ease-out forwards;
+    animation-delay: 2.1s;
+  }
+  .page-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+  .page-content.revealed {
+    opacity: 1;
+    pointer-events: auto;
+  }
   .nav-logo {
-    color: var(--pink);
-    font-size: 1.5rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Pacifico', 'Inter', system-ui;
+    font-size: clamp(1.9rem, 3vw, 2.7rem);
     text-decoration: none;
+    line-height: 1;
+  }
+  .nav-logo .logo-word {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffdff1 0%, #ff7fbd 40%, #ff1f8a 80%, #ff52a9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    padding: 0 3px;
+    letter-spacing: 0.03em;
+    text-shadow: 0 5px 14px rgba(255, 0, 128, 0.3);
+  }
+  .nav-logo .logo-word.with {
+    font-size: clamp(1.6rem, 3.1vw, 2.1rem);
   }
   .nav-links {
     display: flex;
-    gap: 20px;
+    justify-content: flex-end;
+    gap: clamp(18px, 3vw, 32px);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -109,9 +239,22 @@
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
+    white-space: nowrap;
   }
   .nav-links a:hover {
     color: var(--pink);
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+  }
+  .nav-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
   }
   .hero-section {
     position: relative;
@@ -140,7 +283,7 @@
     padding: 0 20px;
     animation: fadeInRight 1s ease-out;
   }
-  .hero-content h2 {
+  .hero-content h1 {
     font-size: 4rem;
     margin: 0 0 20px;
     text-shadow: 0 0 30px rgba(255,0,128,0.8), 2px 2px 4px rgba(0,0,0,0.5);
@@ -172,7 +315,7 @@
     color: #fff;
   }
   .feature i {
-    font-size: 3rem;
+    font-size: 4.4rem;
     color: #fff;
     margin-bottom: 15px;
     animation: pulse 2s infinite;
@@ -181,7 +324,7 @@
   }
   .feature span {
     display: block;
-    font-size: 1.2rem;
+    font-size: 1.45rem;
     color: #fff;
     font-weight: 600;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
@@ -397,14 +540,15 @@
     .hero-content h1 { font-size: 3rem; }
     .hero-content .subtitle { font-size: 1.4rem; }
     .hero-features { justify-content: center; gap: 30px; flex-wrap: wrap; }
-    .feature i { font-size: 2.5rem; }
+    .nav-logo { justify-content: center; }
+    .feature i { font-size: 3.5rem; }
   }
   @media(max-width: 600px) {
     .hero-content h1 { font-size: 2.5rem; }
     .hero-content .subtitle { font-size: 1.2rem; }
     .hero-features { gap: 20px; }
-    .feature i { font-size: 2rem; }
-    .feature span { font-size: 1rem; }
+    .feature i { font-size: 2.8rem; }
+    .feature span { font-size: 1.2rem; }
   }
   .sparkle {
     position: absolute;
@@ -451,6 +595,11 @@
   .footer-item i {
     color: var(--pink);
   }
+  .footer-item a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: inherit;
+  }
   .admin-btn {
     background: var(--gradient);
     border: none;
@@ -472,7 +621,6 @@
     border-radius: 5px;
     font-size: 0.8rem;
     cursor: pointer;
-    margin-left: 10px;
     transition: background 0.3s ease;
   }
   .logout-btn:hover {
@@ -762,7 +910,6 @@
     border-radius: 5px;
     font-size: 0.8rem;
     cursor: pointer;
-    margin-left: 10px;
     transition: transform 0.3s ease;
   }
   .edit-offer-btn:hover {
@@ -779,21 +926,33 @@
     display: none;
   }
   @media(max-width: 768px) {
-    .nav-container { 
-      flex-direction: column; 
-      gap: 15px;
-      padding: 10px 15px;
+    .nav-container {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      column-gap: 12px;
+      row-gap: 12px;
+      padding: 12px 16px;
     }
-    .nav-links { 
+    .nav-left {
+      grid-column: 1 / span 2;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .nav-links {
       display: none;
+      margin-left: 0;
     }
-    .hamburger { display: block; }
     .hamburger { display: block; }
     .sidebar { display: block; }
-    .admin-btn, .logout-btn {
-      position: static;
-      margin: 10px auto;
-      display: inline-block;
+    .nav-actions {
+      grid-column: 1 / span 2;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-left: 0;
+    }
+    .nav-actions button {
+      font-size: 0.75rem;
+      padding: 6px 12px;
     }
     .hero-section {
       padding-left: 5%;
@@ -825,10 +984,22 @@
   }
   @media(max-width: 480px) {
     .nav-container {
-      padding: 10px 15px;
+      padding: 10px 14px;
+    }
+    .nav-left {
+      gap: 10px;
     }
     .nav-logo {
       font-size: 1.3rem;
+    }
+    .nav-actions {
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .nav-actions button {
+      font-size: 0.72rem;
+      padding: 5px 10px;
     }
     .nav-links {
       gap: 10px;
@@ -878,15 +1049,65 @@
       font-size: 0.8rem;
     }
     .footer-content {
-      gap: 15px;
-    }
+        gap: 15px;
+      }
   
+    @keyframes introHeroEnter {
+      0% {
+        opacity: 0;
+        transform: translateX(-120%) scale(0.88);
+      }
+      60% {
+        opacity: 1;
+        transform: translateX(6%) scale(1.02);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+    @keyframes curtainOpenLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-105%); }
+    }
+    @keyframes curtainOpenRight {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(105%); }
+    }
+    @keyframes titleGlow {
+      0%, 100% { filter: drop-shadow(0 0 22px rgba(255, 0, 128, 0.55)); opacity: 0.95; }
+      50% { filter: drop-shadow(0 0 32px rgba(255, 102, 178, 0.75)); opacity: 1; }
+    }
+    @media(max-width: 600px) {
+      .intro-overlay {
+        gap: 3vh;
+        padding: 6vh 6vw;
+      }
+      .intro-title {
+        letter-spacing: 0.04em;
+      }
+      .intro-title span {
+        letter-spacing: 0.08em;
+      }
+    }
+
 </style>
 <body>
+  <div class="intro-overlay" id="introOverlay">
+    <div class="intro-title">Welcome to the<br><span>Zumba World</span></div>
+    <video class="intro-video" id="introVideo" autoplay muted playsinline>
+      <source src="assets/intro.mp4" type="video/mp4">
+    </video>
+    <div class="curtain curtain-left"></div>
+    <div class="curtain curtain-right"></div>
+  </div>
+  <div class="page-content revealed" id="pageContent">
   <nav>
     <div class="nav-container">
-      <a href="index.html" class="nav-logo">Zumba with Pooh</a>
-      <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="nav-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <a href="index.html" class="nav-logo"><span class="logo-word">Zumba</span><span class="logo-word with">with</span><span class="logo-word pooh">Pooh</span></a>
+      </div>
       <ul class="nav-links">
         <li><a href="index.html" class="active">Home</a></li>
         <li><a href="services.html">Services</a></li>
@@ -895,14 +1116,13 @@
         <li><a href="branch1.html">Branch 1</a></li>
         <li><a href="branch2.html">Branch 2</a></li>
       </ul>
+      <div class="nav-actions">
+        <button class="admin-btn" id="adminBtn" onclick="adminLogin()">Admin</button>
+        <button class="edit-offer-btn" id="editOfferBtn" onclick="openOfferEditor()" style="display: none;"><i class="fas fa-edit"></i> Edit Offer</button>
+        <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" style="display: none;">Logout</button>
+      </div>
     </div>
   </nav>
-
-  <div style="position: absolute; top: 10px; right: 20px; z-index: 10;">
-    <button class="admin-btn" id="adminBtn" onclick="adminLogin()">Admin</button>
-    <button class="edit-offer-btn" id="editOfferBtn" onclick="openOfferEditor()" style="display: none;"><i class="fas fa-edit"></i> Edit Offer</button>
-    <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" style="display: none;">Logout</button>
-  </div>
 
   <div class="sidebar" id="sidebar">
     <button class="close-btn" onclick="toggleSidebar()">&times;</button>
@@ -931,7 +1151,7 @@
   <div class="hero-section">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1>Welcome to Fitness Fun!</h1>
+      <h1>Welcome to Zumba with Pooh Fitness Zone</h1>
       <p class="subtitle">Transform your body, energize your soul with Zumba!</p>
       <div class="hero-features">
         <div class="feature">
@@ -958,7 +1178,7 @@
     <div class="footer-content">
       <div class="footer-item">
         <i class="fas fa-phone"></i>
-        <span>89765 93179</span>
+        <span>8976593179</span>
       </div>
       <div class="footer-item">
         <i class="fab fa-instagram"></i>
@@ -1022,6 +1242,7 @@
   <div class="sparkle"></div>
 
 
+  </div>
 
   <script>
     // Backend API
@@ -1039,6 +1260,77 @@
 
     let currentOfferImageFile = null;
     let offerModalOpen = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const overlay = document.getElementById('introOverlay');
+      const video = document.getElementById('introVideo');
+      const pageContent = document.getElementById('pageContent');
+      const curtains = overlay ? Array.from(overlay.querySelectorAll('.curtain')) : [];
+
+      if (!overlay || !pageContent) return;
+
+      pageContent.classList.remove('revealed');
+      document.body.classList.add('intro-active');
+
+      const revealContent = () => {
+        if (overlay.classList.contains('hidden')) return;
+        overlay.classList.add('hidden');
+        document.body.classList.remove('intro-active');
+        pageContent.classList.add('revealed');
+        setTimeout(() => {
+          if (overlay && overlay.parentElement) {
+            overlay.parentElement.removeChild(overlay);
+          }
+        }, 700);
+      };
+
+      const fallbackReveal = setTimeout(revealContent, 6500);
+
+      if (curtains.length) {
+        let remainingCurtains = curtains.length;
+        const handleCurtainEnd = () => {
+          remainingCurtains -= 1;
+          if (remainingCurtains <= 0) {
+            clearTimeout(fallbackReveal);
+            revealContent();
+          }
+        };
+        curtains.forEach(curtain => curtain.addEventListener('animationend', handleCurtainEnd, { once: true }));
+      }
+
+      if (video) {
+        const attemptPlay = () => {
+          video.muted = true;
+          video.play().catch(() => {
+            clearTimeout(fallbackReveal);
+            revealContent();
+          });
+        };
+
+        if (video.readyState >= 2) {
+          attemptPlay();
+        } else {
+          video.addEventListener('canplay', attemptPlay, { once: true });
+        }
+
+        video.addEventListener('ended', () => {
+          clearTimeout(fallbackReveal);
+          revealContent();
+        }, { once: true });
+        video.addEventListener('error', () => {
+          clearTimeout(fallbackReveal);
+          revealContent();
+        }, { once: true });
+      } else {
+        clearTimeout(fallbackReveal);
+        revealContent();
+      }
+
+      overlay.addEventListener('click', () => {
+        clearTimeout(fallbackReveal);
+        revealContent();
+      }, { once: true });
+    });
 
     function setOfferButtonDisabled(disabled) {
       const btn = document.querySelector('.offer-btn');
@@ -1326,12 +1618,22 @@
           }
           
           const displayText = extracted.details || '';
-          
-          if (displayText) {
+          const hasText = !!displayText;
+          const hasImage = !!data.imageUrl;
+          const hasTitle = !!rawTitle;
+          const hasValidity = !!extracted.validity;
+
+          if (hasText) {
             textEl.textContent = displayText;
-            noOfferEl.style.display = 'none';
+            textEl.style.display = 'block';
           } else {
             textEl.textContent = '';
+            textEl.style.display = 'none';
+          }
+
+          if (hasText || hasImage || hasTitle || hasValidity) {
+            noOfferEl.style.display = 'none';
+          } else {
             noOfferEl.style.display = 'block';
           }
         } else {

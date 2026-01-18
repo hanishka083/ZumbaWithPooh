@@ -4,12 +4,26 @@
 <meta name="google-site-verification" content="MEf2R63LxCOWOihWyQgNUwO1YRTy2SHTcdxLbBSUmVk" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MXR7GZX1T8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-MXR7GZX1T8');
+</script>
 <title>Zumba with Pooh — Video Reviews</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-  :root{
-    --pink:#ff0080; --pink-2:#ff66b2; --bg:#0b0b0b; --muted:#ffd6ec; --gradient: linear-gradient(135deg, var(--pink), var(--pink-2));
+  :root {
+    --pink: #ff0080;
+    --pink-2: #ff66b2;
+    --bg: #0b0b0b;
+    --muted: #ffd6ec;
+    --gradient: linear-gradient(135deg, var(--pink), var(--pink-2));
     --shadow: 0 8px 32px rgba(255,0,128,0.3);
   }
   * { box-sizing: border-box; }
@@ -22,20 +36,26 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
   }
   nav {
     background: rgba(0,0,0,0.9);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding: 0;
   }
   .nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
+     width: 100%;
+     margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    padding: 15px 20px;
+    column-gap: 24px;
+     padding: 15px clamp(18px, 4vw, 48px);
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
   .hamburger {
     display: none;
@@ -57,7 +77,6 @@
     z-index: 1000;
     transition: left 0.3s ease;
     padding: 20px;
-    box-sizing: border-box;
   }
   .sidebar.open {
     left: 0;
@@ -91,14 +110,31 @@
     cursor: pointer;
   }
   .nav-logo {
-    color: var(--pink);
-    font-size: 1.5rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Pacifico', 'Inter', system-ui;
+    font-size: clamp(1.9rem, 3vw, 2.7rem);
     text-decoration: none;
+    line-height: 1;
+  }
+  .nav-logo .logo-word {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffdff1 0%, #ff7fbd 40%, #ff1f8a 80%, #ff52a9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    padding: 0 3px;
+    letter-spacing: 0.03em;
+    text-shadow: 0 5px 14px rgba(255,0,128,0.3);
+  }
+  .nav-logo .logo-word.with {
+    font-size: clamp(1.6rem, 3.1vw, 2.1rem);
   }
   .nav-links {
     display: flex;
-    gap: 20px;
+    justify-content: flex-end;
+    gap: clamp(18px, 3vw, 32px);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -108,21 +144,70 @@
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
+    white-space: nowrap;
   }
-  .nav-links a:hover, .nav-links a.active {
+  .nav-links a:hover,
+  .nav-links a.active {
     color: var(--pink);
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .nav-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 0.8rem;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+  .admin-btn {
+    background: var(--gradient);
+    padding: 8px 16px;
+    border-radius: 5px;
+  }
+  .admin-btn:hover {
+    transform: scale(1.05);
+  }
+  .edit-offer-btn {
+    background: linear-gradient(135deg, #ff6b35, #ff0080);
+    padding: 8px 16px;
+    border-radius: 5px;
+  }
+  .edit-offer-btn:hover {
+    transform: scale(1.05);
+  }
+  .logout-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 5px;
+  }
+  .logout-btn:hover {
+    background: rgba(255,255,255,0.2);
   }
   .main-content {
     flex: 1;
-    padding: 40px 20px;
+    padding: 40px 20px 80px;
     max-width: 1200px;
-    margin: 0 auto;
     width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
   }
   .page-title {
     text-align: center;
     font-size: 3rem;
-    margin-bottom: 40px;
+    margin: 0;
     background: var(--gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -132,13 +217,13 @@
     background: rgba(255,255,255,0.05);
     border-radius: 10px;
     padding: 30px;
-    margin-bottom: 40px;
     text-align: center;
     border: 1px solid rgba(255,255,255,0.1);
-    display: none; /* Hidden by default */
+    display: none;
+    box-shadow: var(--shadow);
   }
   .upload-section h2 {
-    margin-bottom: 20px;
+    margin: 0 0 16px;
     color: var(--pink);
   }
   .upload-btn {
@@ -156,7 +241,7 @@
   }
   .videos-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
   }
   .video-item {
@@ -164,77 +249,54 @@
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.1);
-    display: none;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
   }
   .video-item video {
     width: 100%;
     height: auto;
+    display: block;
   }
   .video-info {
-    padding: 15px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
   .video-info h3 {
-    margin: 0 0 10px;
+    margin: 0;
+    font-size: 1.1rem;
     color: var(--pink);
   }
   .video-info p {
     margin: 0;
     color: #ccc;
-  }
-  .admin-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: var(--gradient);
-    border: none;
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-  }
-  .admin-btn:hover {
-    transform: scale(1.05);
-  }
-  .logout-btn {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    margin-left: 10px;
-    transition: background 0.3s ease;
-  }
-  .logout-btn:hover {
-    background: rgba(255,255,255,0.2);
+    font-size: 0.9rem;
   }
   .modal {
     position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background-color: rgba(0,0,0,0.8);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
   }
   .modal-content {
     background: var(--bg);
     border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 30px;
-    max-width: 400px;
-    width: 90%;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 420px;
+    width: min(90%, 420px);
     text-align: center;
+    position: relative;
+    box-shadow: var(--shadow);
   }
   .modal-content h2 {
     color: var(--pink);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
   .modal-buttons {
     display: flex;
@@ -246,7 +308,7 @@
     border: none;
     color: #fff;
     padding: 12px 24px;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 1rem;
     transition: transform 0.3s ease;
@@ -256,61 +318,97 @@
   }
   .close {
     position: absolute;
-    top: 10px;
-    right: 15px;
+    top: 12px;
+    right: 16px;
     color: #fff;
-    font-size: 28px;
+    font-size: 1.75rem;
     font-weight: bold;
     cursor: pointer;
   }
+  @media (max-width: 900px) {
+    .nav-logo {
+      justify-content: center;
+    }
+  }
   @media (max-width: 768px) {
     .nav-container {
-      flex-direction: column;
-      gap: 15px;
-      padding: 10px 15px;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      column-gap: 12px;
+      row-gap: 12px;
+      padding: 12px 16px;
+    }
+    .nav-left {
+      grid-column: 1 / span 2;
+      justify-content: space-between;
+      width: 100%;
     }
     .nav-links {
       display: none;
+      margin-left: 0;
     }
     .hamburger {
       display: block;
     }
-    .admin-btn, .logout-btn {
-      position: static;
-      margin: 10px auto;
-      display: inline-block;
+    .sidebar {
+      display: block;
+    }
+    .nav-actions {
+      grid-column: 1 / span 2;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-left: 0;
+    }
+    .nav-actions button {
+      font-size: 0.75rem;
+      padding: 6px 12px;
+    }
+    .main-content {
+      padding: 32px 16px 60px;
+      gap: 30px;
     }
     .page-title {
       font-size: 2.5rem;
-      margin-bottom: 30px;
     }
     .upload-section {
       padding: 20px;
-      margin-bottom: 30px;
     }
     .videos-grid {
       grid-template-columns: 1fr;
-      gap: 15px;
-    }
-    .modal-content {
-      padding: 20px;
-      margin: 20px;
-      max-width: 90%;
+      gap: 18px;
     }
     .modal-buttons {
       flex-direction: column;
-      gap: 15px;
+      gap: 16px;
     }
     .modal-buttons button {
       width: 100%;
     }
   }
   @media (max-width: 480px) {
+    .nav-container {
+      padding: 10px 14px;
+    }
+    .nav-left {
+      gap: 10px;
+    }
+    .nav-logo {
+      font-size: 1.3rem;
+    }
+    .nav-actions {
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .nav-actions button {
+      font-size: 0.72rem;
+      padding: 5px 10px;
+    }
     .page-title {
-      font-size: 2rem;
+      font-size: 2.1rem;
     }
     .upload-section {
-      padding: 15px;
+      padding: 18px;
     }
     .modal-content h2 {
       font-size: 1.5rem;
@@ -321,8 +419,10 @@
 <body>
   <nav>
     <div class="nav-container">
-      <a href="index.html" class="nav-logo">Zumba with Pooh</a>
-      <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="nav-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <a href="index.html" class="nav-logo"><span class="logo-word">Zumba</span><span class="logo-word with">with</span><span class="logo-word pooh">Pooh</span></a>
+      </div>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="services.html">Services</a></li>
@@ -331,6 +431,11 @@
         <li><a href="branch1.html">Branch 1</a></li>
         <li><a href="branch2.html">Branch 2</a></li>
       </ul>
+      <div class="nav-actions">
+        <button class="admin-btn" id="adminBtn" onclick="adminLogin()">Admin</button>
+        <button class="edit-offer-btn" id="editOfferBtn" onclick="openOfferEditor()" style="display: none;"><i class="fas fa-edit"></i> Edit Offer</button>
+        <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" style="display: none;">Logout</button>
+      </div>
     </div>
   </nav>
 
@@ -375,222 +480,245 @@
   </div>
 
   <script>
-    let videoCount = 0;
     const maxVideos = 10;
+    let videoList = [];
 
-    // Initialize IndexedDB for video storage
-    let db;
-    const dbRequest = indexedDB.open('VideoReviewsDB', 1);
+    const CLOUDINARY_CLOUD_NAME = 'dydajkqdk';
+    const CLOUDINARY_UPLOAD_PRESET = 'ZumbaWithPooh';
+    const CLOUDINARY_VIDEO_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`;
 
-    dbRequest.onupgradeneeded = function(event) {
-      db = event.target.result;
-      if (!db.objectStoreNames.contains('videos')) {
-        db.createObjectStore('videos', { keyPath: 'id' });
-      }
-    };
+    const DEPLOYED_API_BASE = 'https://zumbawithpooh.onrender.com/api';
+    const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000/api'
+      : DEPLOYED_API_BASE;
 
-    dbRequest.onsuccess = function(event) {
-      db = event.target.result;
-      loadSavedVideos();
-    };
-
-    dbRequest.onerror = function(event) {
-      console.error('IndexedDB error:', event.target.error);
-    };
-
-    // Function to save video to IndexedDB (now stores Cloudinary URL)
-    function saveVideoToDB(slot, arrayBuffer, fileName, mimeType, cloudinaryUrl = null) {
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(['videos'], 'readwrite');
-        const store = transaction.objectStore('videos');
-        const request = store.put({ 
-          id: slot, 
-          data: arrayBuffer, 
-          fileName: fileName, 
-          mimeType: mimeType,
-          cloudinaryUrl: cloudinaryUrl
-        });
-
-        request.onsuccess = () => resolve();
-        request.onerror = () => reject(request.error);
-      });
-    }
-
-    // Function to load video from IndexedDB
-    function loadVideoFromDB(slot) {
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(['videos'], 'readonly');
-        const store = transaction.objectStore('videos');
-        const request = store.get(slot);
-
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-    }
-
-    // Load saved videos from IndexedDB
-    function loadSavedVideos() {
-      if (!db) return;
-
-      const grid = document.getElementById('videosGrid');
-      for (let i = 0; i < maxVideos; i++) {
-        loadVideoFromDB(i).then(videoData => {
-          if (videoData) {
-            let videoURL;
-            // Check if we have a Cloudinary URL (new method) or stored blob data (old method)
-            if (videoData.cloudinaryUrl) {
-              videoURL = videoData.cloudinaryUrl;
-            } else if (videoData.data) {
-              // Recreate blob URL from stored ArrayBuffer (legacy support)
-              const blob = new Blob([videoData.data], { type: videoData.mimeType });
-              videoURL = URL.createObjectURL(blob);
-            }
-            if (videoURL) {
-              addVideoToGrid(videoURL, videoData.fileName, false);
-              videoCount++;
-            }
-          }
-        }).catch(error => {
-          console.error('Error loading video:', error);
-        });
-      }
-    }
+    const videosGrid = document.getElementById('videosGrid');
+    const uploadSection = document.getElementById('uploadSection');
+    const adminBtn = document.getElementById('adminBtn');
+    const editBtn = document.getElementById('editOfferBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const videoInput = document.getElementById('videoInput');
+    const uploadStatus = document.getElementById('uploadStatus');
 
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('open');
+      if (sidebar) sidebar.classList.toggle('open');
     }
 
     function openTestimonialsPopup() {
-      document.getElementById('testimonialsModal').style.display = 'flex';
+      const modal = document.getElementById('testimonialsModal');
+      if (modal) modal.style.display = 'flex';
     }
 
     function closeTestimonialsPopup() {
-      document.getElementById('testimonialsModal').style.display = 'none';
+      const modal = document.getElementById('testimonialsModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function renderGridMessage(text) {
+      if (!videosGrid) return;
+      videosGrid.innerHTML = '';
+      const msg = document.createElement('p');
+      msg.style.color = 'var(--muted)';
+      msg.style.textAlign = 'center';
+      msg.textContent = text;
+      videosGrid.appendChild(msg);
+    }
+
+    function createVideoCard(video, index) {
+      const item = document.createElement('div');
+      item.className = 'video-item';
+
+      const videoEl = document.createElement('video');
+      videoEl.controls = true;
+      videoEl.setAttribute('preload', 'metadata');
+
+      const sourceEl = document.createElement('source');
+      sourceEl.src = video.url;
+      sourceEl.type = video.mimeType || 'video/mp4';
+      videoEl.appendChild(sourceEl);
+      videoEl.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+
+      const info = document.createElement('div');
+      info.className = 'video-info';
+
+      const heading = document.createElement('h3');
+      heading.textContent = video.title || `Review ${index + 1}`;
+      info.appendChild(heading);
+
+      if (video.fileName) {
+        const namePara = document.createElement('p');
+        namePara.textContent = video.fileName;
+        info.appendChild(namePara);
+      }
+
+      item.appendChild(videoEl);
+      item.appendChild(info);
+      return item;
+    }
+
+    function renderVideos() {
+      if (!videosGrid) return;
+      videosGrid.innerHTML = '';
+
+      if (!videoList.length) {
+        renderGridMessage('No videos uploaded yet.');
+        return;
+      }
+
+      videoList.forEach((video, index) => {
+        videosGrid.appendChild(createVideoCard(video, index));
+      });
+    }
+
+    async function fetchVideos() {
+      if (!videosGrid) return;
+      renderGridMessage('Loading videos...');
+
+      try {
+        const response = await fetch(`${API_BASE}/videos`);
+        if (!response.ok) {
+          throw new Error('Failed to load videos');
+        }
+
+        const data = await response.json();
+        videoList = Array.isArray(data) ? data : [];
+        if (videoList.length > maxVideos) {
+          videoList = videoList.slice(0, maxVideos);
+        }
+        renderVideos();
+      } catch (error) {
+        console.error('Error fetching videos:', error);
+        renderGridMessage('Unable to load videos right now.');
+      }
+    }
+
+    async function registerVideoWithServer(videoURL, file, cloudinaryResponse) {
+      const rawName = file?.name || '';
+      const titleFromFile = rawName ? rawName.replace(/\.[^/.]+$/, '') : '';
+
+      const payload = {
+        url: videoURL,
+        fileName: rawName,
+        mimeType: file?.type || '',
+        publicId: cloudinaryResponse?.public_id || '',
+        title: cloudinaryResponse?.original_filename || titleFromFile
+      };
+
+      const response = await fetch(`${API_BASE}/videos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save video details');
+      }
+
+      return response.json();
+    }
+
+    function updateAdminUI(isAdmin) {
+      if (adminBtn) adminBtn.style.display = isAdmin ? 'none' : 'inline-block';
+      if (editBtn) editBtn.style.display = isAdmin ? 'inline-block' : 'none';
+      if (logoutBtn) logoutBtn.style.display = isAdmin ? 'inline-block' : 'none';
+      if (uploadSection) uploadSection.style.display = isAdmin ? 'block' : 'none';
     }
 
     function adminLogin() {
-      // Check if already logged in
       if (localStorage.getItem('adminLoggedIn') === 'true') {
-        document.getElementById('uploadSection').style.display = 'block';
-        document.getElementById('adminBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
+        updateAdminUI(true);
         alert('Already logged in as admin!');
         return;
       }
 
       const password = prompt('Enter admin password:');
-      if (password === 'poohadmin') { // Change this to your desired password
-        localStorage.setItem('adminLoggedIn', 'true');
-        document.getElementById('uploadSection').style.display = 'block';
-        document.getElementById('adminBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
-        alert('Admin access granted!');
-      } else {
+      if (password !== 'poohadmin') {
         alert('Incorrect password.');
+        return;
       }
+
+      localStorage.setItem('adminLoggedIn', 'true');
+      updateAdminUI(true);
+      alert('Admin access granted!');
     }
 
     function adminLogout() {
       localStorage.removeItem('adminLoggedIn');
-      document.getElementById('uploadSection').style.display = 'none';
-      document.getElementById('adminBtn').style.display = 'inline-block';
-      document.getElementById('logoutBtn').style.display = 'none';
+      updateAdminUI(false);
       alert('Logged out successfully!');
     }
 
-    // Check if admin is logged in on page load
-    window.onload = function() {
-      if (localStorage.getItem('adminLoggedIn') === 'true') {
-        document.getElementById('uploadSection').style.display = 'block';
-        document.getElementById('adminBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
-      } else {
-        document.getElementById('uploadSection').style.display = 'none';
-        document.getElementById('adminBtn').style.display = 'inline-block';
-        document.getElementById('logoutBtn').style.display = 'none';
-      }
-    };
+    if (videoInput) {
+      videoInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-    // Cloudinary Configuration for Videos
-    const CLOUDINARY_CLOUD_NAME = 'dydajkqdk';
-    const CLOUDINARY_UPLOAD_PRESET = 'ZumbaWithPooh';
-    const CLOUDINARY_VIDEO_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`;
+        if (videoList.length >= maxVideos) {
+          if (uploadStatus) uploadStatus.textContent = 'Maximum number of videos reached.';
+          event.target.value = '';
+          return;
+        }
 
-    document.getElementById('videoInput').addEventListener('change', async function(event) {
-      const file = event.target.files[0];
-      if (file && videoCount < maxVideos) {
-        // Check file size (limit to 100MB for Cloudinary free tier)
-        const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+        const maxSize = 100 * 1024 * 1024; // 100MB
         if (file.size > maxSize) {
-          document.getElementById('uploadStatus').textContent = 'Video file is too large. Please choose a file smaller than 100MB.';
+          if (uploadStatus) uploadStatus.textContent = 'Video file is too large. Please choose a file smaller than 100MB.';
+          event.target.value = '';
           return;
         }
 
         try {
-          document.getElementById('uploadStatus').textContent = 'Uploading video to Cloudinary...';
+          if (uploadStatus) uploadStatus.textContent = 'Uploading video to Cloudinary...';
 
-          // Upload to Cloudinary
           const formData = new FormData();
           formData.append('file', file);
           formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
           formData.append('folder', 'video-reviews');
           formData.append('public_id', `review_${Date.now()}`);
           formData.append('resource_type', 'video');
-          
+
           const response = await fetch(CLOUDINARY_VIDEO_UPLOAD_URL, {
             method: 'POST',
             body: formData
           });
-          
+
           if (!response.ok) {
             throw new Error('Cloudinary upload failed');
           }
-          
+
           const data = await response.json();
           const videoURL = data.secure_url;
+          const savedVideo = await registerVideoWithServer(videoURL, file, data);
 
-          // Find the next empty slot
-          let slot = 0;
-          while (await loadVideoFromDB(slot).catch(() => null) && slot < maxVideos) {
-            slot++;
+          videoList = [savedVideo, ...videoList];
+          if (videoList.length > maxVideos) {
+            videoList = videoList.slice(0, maxVideos);
           }
+          renderVideos();
 
-          if (slot < maxVideos) {
-            // Save Cloudinary URL to IndexedDB for persistence
-            await saveVideoToDB(slot, null, file.name, file.type, videoURL);
-
-            addVideoToGrid(videoURL, file.name);
-            videoCount++;
-            document.getElementById('uploadStatus').textContent = `Video ${videoCount} uploaded to Cloudinary successfully!`;
-            setTimeout(() => {
-              document.getElementById('uploadStatus').textContent = '';
-            }, 3000);
+          if (uploadStatus) {
+            uploadStatus.textContent = `Video uploaded successfully! (${videoList.length}/${maxVideos})`;
+            setTimeout(() => { uploadStatus.textContent = ''; }, 3000);
           }
         } catch (error) {
           console.error('Error uploading video:', error);
-          document.getElementById('uploadStatus').textContent = 'Error uploading video. Please try again.';
+          if (uploadStatus) uploadStatus.textContent = 'Error uploading video. Please try again.';
+        } finally {
+          event.target.value = '';
         }
-      }
-    });
-
-    function addVideoToGrid(videoURL, fileName, incrementCount = true) {
-      const grid = document.getElementById('videosGrid');
-      const videoItem = document.createElement('div');
-      videoItem.className = 'video-item';
-      videoItem.innerHTML = `
-        <video controls>
-          <source src="${videoURL}" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
-        <div class="video-info">
-          <h3>Review ${incrementCount ? videoCount + 1 : videoCount}</h3>
-          <p>${fileName}</p>
-        </div>
-      `;
-      grid.appendChild(videoItem);
-      videoItem.style.display = 'block';
+      });
     }
+
+    function openOfferEditor() {
+      localStorage.setItem('openOfferEditor', 'true');
+      window.location.href = 'index.html#open-offer-editor';
+    }
+
+    window.onload = function() {
+      const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+      updateAdminUI(isAdmin);
+      fetchVideos();
+    };
   </script>
 </body>
 </html>

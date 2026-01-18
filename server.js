@@ -9,6 +9,7 @@ const cors = require('cors');
 const multer = require('multer');
 const { v2: cloudinary } = require('cloudinary');
 const streamifier = require('streamifier');
+const nodemailer = require('nodemailer');
 const path = require('path');
 
 const app = express();
@@ -61,6 +62,48 @@ if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !pr
 }
 
 /* =========================
+   EMAIL (CONTACT NOTIFICATIONS)
+========================= */
+
+const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || '';
+const CONTACT_FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || process.env.SMTP_USER || '';
+const SMTP_HOST = process.env.SMTP_HOST || '';
+const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
+const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true' || SMTP_PORT === 465;
+
+let mailTransporter = null;
+
+if (SMTP_HOST && CONTACT_TO_EMAIL) {
+  const transporterOptions = {
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_SECURE
+  };
+
+  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    transporterOptions.auth = {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    };
+  }
+
+  if (String(process.env.SMTP_IGNORE_TLS_ERRORS || '').toLowerCase() === 'true') {
+    transporterOptions.tls = { rejectUnauthorized: false };
+  }
+
+  try {
+    mailTransporter = nodemailer.createTransport(transporterOptions);
+    mailTransporter.verify()
+      .then(() => console.log('✅ Email transporter ready'))
+      .catch(err => console.warn('⚠️ Email transporter verification failed:', err.message));
+  } catch (err) {
+    console.error('❌ Failed to set up email transporter:', err);
+  }
+} else {
+  console.log('ℹ️ Contact email notifications disabled (missing SMTP_HOST or CONTACT_TO_EMAIL)');
+}
+
+/* =========================
    MULTER SETUP
 ========================= */
 
@@ -78,6 +121,7 @@ const cardDataSchema = new mongoose.Schema({
       cardNum: Number,
       beforeImg: String,
       afterImg: String,
+      details: String,
       name: String,
       beforeWeight: String,
       afterWeight: String
@@ -104,6 +148,27 @@ const offerSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 const Offer = mongoose.model('Offer', offerSchema);
+
+// Contact inquiry schema
+const contactInquirySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: { type: String, default: '' },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+const ContactInquiry = mongoose.model('ContactInquiry', contactInquirySchema);
+
+// Video reviews schema
+const videoReviewSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  title: { type: String, default: '' },
+  fileName: { type: String, default: '' },
+  mimeType: { type: String, default: '' },
+  publicId: { type: String, default: '' },
+  uploadedAt: { type: Date, default: Date.now }
+});
+const VideoReview = mongoose.model('VideoReview', videoReviewSchema);
 
 /* =========================
    ROUTES
@@ -267,6 +332,106 @@ app.delete('/api/offers/latest', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete offer' });
+  }
+});
+
+// ✅ Contact inquiries
+app.post('/api/contact/inquiries', async (req, res) => {
+  const { name, email, phone = '', message } = req.body || {};
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const inquiry = await ContactInquiry.create({ name, email, phone, message });
+
+    let emailSent = false;
+    if (mailTransporter && CONTACT_TO_EMAIL && CONTACT_FROM_EMAIL) {
+      const emailSubject = `New Contact Inquiry from ${name || 'Visitor'}`;
+      const plainTextBody = [
+        `You have received a new contact inquiry via ZumbaWithPooh.com`,
+        '',
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Phone: ${phone || 'Not provided'}`,
+        '',
+        'Message:',
+        message,
+        '',
+        `Submitted at: ${new Date(inquiry.createdAt).toLocaleString()}`
+      ].join('\n');
+
+      const htmlBody = `
+        <h2>New Contact Inquiry</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        <p><strong>Submitted at:</strong> ${new Date(inquiry.createdAt).toLocaleString()}</p>
+        <hr>
+        <p><strong>Message:</strong></p>
+        <p style="white-space: pre-line;">${message}</p>
+      `;
+
+      try {
+        await mailTransporter.sendMail({
+          from: CONTACT_FROM_EMAIL,
+          to: CONTACT_TO_EMAIL,
+          replyTo: email,
+          subject: emailSubject,
+          text: plainTextBody,
+          html: htmlBody
+        });
+        emailSent = true;
+      } catch (mailErr) {
+        console.error('❌ Failed to send contact inquiry email:', mailErr);
+      }
+    }
+
+    const responsePayload = inquiry.toObject();
+    responsePayload.emailSent = emailSent;
+
+    res.status(201).json(responsePayload);
+  } catch (err) {
+    console.error('Failed to save inquiry:', err);
+    res.status(500).json({ error: 'Failed to save inquiry' });
+  }
+});
+
+app.get('/api/contact/inquiries', async (req, res) => {
+  try {
+    const inquiries = await ContactInquiry.find().sort({ createdAt: -1 });
+    res.json(inquiries);
+  } catch (err) {
+    console.error('Failed to load inquiries:', err);
+    res.status(500).json({ error: 'Failed to load inquiries' });
+  }
+});
+
+// ✅ Video reviews
+app.post('/api/videos', async (req, res) => {
+  const { url, title = '', fileName = '', mimeType = '', publicId = '' } = req.body || {};
+
+  if (!url) {
+    return res.status(400).json({ error: 'Missing video URL' });
+  }
+
+  try {
+    const video = await VideoReview.create({ url, title, fileName, mimeType, publicId });
+    res.status(201).json(video);
+  } catch (err) {
+    console.error('Failed to save video:', err);
+    res.status(500).json({ error: 'Failed to save video' });
+  }
+});
+
+app.get('/api/videos', async (req, res) => {
+  try {
+    const videos = await VideoReview.find().sort({ uploadedAt: -1 });
+    res.json(videos);
+  } catch (err) {
+    console.error('Failed to load videos:', err);
+    res.status(500).json({ error: 'Failed to load videos' });
   }
 });
 

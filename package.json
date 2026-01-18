@@ -13,6 +13,7 @@
     "express": "^5.2.1",
     "mongoose": "^8.21.0",
     "multer": "^2.0.2",
+    "nodemailer": "^6.10.1",
     "streamifier": "^0.1.1"
   }
 }
