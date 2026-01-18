@@ -271,7 +271,9 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 20px 22px;
       border-radius: 18px;
       border: 1px solid rgba(255,255,255,0.16);
       overflow: hidden;
@@ -289,19 +291,15 @@
       filter: none;
     }
     .services-intro-card h3 {
-      position: absolute;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
+      position: static;
       margin: 0;
-      padding: 8px 18px;
-      border-radius: 999px;
-      background: rgba(0,0,0,0.55);
-      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0;
+      text-align: center;
       color: #fff;
       font-size: 1.2rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      text-shadow: 0 6px 16px rgba(0,0,0,0.45);
     }
     .services-intro-card video {
       flex: 1;
@@ -310,6 +308,7 @@
       object-fit: cover;
       background: #000;
       outline: none;
+      border-radius: 12px;
     }
     .services-intro-stage.stage-secondary {
       align-items: center;
