@@ -426,7 +426,7 @@
     /* Testimonials modal (standard across site) */
     .modal {
       position: fixed;
-      z-index: 1000;
+      z-index: 2500;
       left: 0;
       top: 0;
       width: 100%;
@@ -437,46 +437,109 @@
       align-items: center;
     }
     .modal-content {
-      background: var(--bg);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 30px;
-      max-width: 400px;
-      width: 90%;
+      background: linear-gradient(145deg, rgba(15,0,10,0.95), rgba(55,0,40,0.92));
+      border: 2px solid rgba(255,0,128,0.45);
+      border-radius: 22px;
+      padding: clamp(28px, 4vw, 52px);
+      max-width: 520px;
+      width: min(88%, 520px);
       text-align: center;
       position: relative;
+      box-shadow: 0 28px 80px rgba(255,0,128,0.38), 0 0 0 2px rgba(255,0,128,0.15);
+      overflow: hidden;
+    }
+    .modal-content::before,
+    .modal-content::after {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      background: radial-gradient(circle at center, rgba(255,0,128,0.22), transparent 65%);
+      opacity: 0.8;
+      filter: blur(12px);
+      animation: modalGlow 6s ease-in-out infinite;
+    }
+    .modal-content::after {
+      inset: -150px;
+      background: radial-gradient(circle at 70% 20%, rgba(255,255,255,0.18), transparent 55%);
+      animation-direction: reverse;
+    }
+    .modal-content > * {
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes modalGlow {
+      0%, 100% { transform: scale(1); opacity: 0.75; }
+      50% { transform: scale(1.1); opacity: 1; }
     }
     .modal-content h2 {
-      color: var(--pink);
-      margin-bottom: 20px;
+      color: #ffe9f7;
+      margin-bottom: clamp(14px, 3vh, 22px);
+      font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 12px 30px rgba(255,0,128,0.6);
+    }
+    .modal-highlight {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: rgba(255,0,128,0.22);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #ffe9f7;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: clamp(12px, 2vh, 18px);
+      box-shadow: 0 16px 38px rgba(255,0,128,0.35);
+    }
+    .modal-message {
+      color: #ffd6ec;
+      margin-bottom: clamp(18px, 3vh, 28px);
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      line-height: 1.7;
     }
     .modal-buttons {
       display: flex;
-      gap: 20px;
+      gap: clamp(16px, 3vw, 26px);
       justify-content: center;
     }
     .modal-buttons button {
-      background: var(--gradient);
+      background: linear-gradient(135deg, #ff66b2, #ff0080 60%, #ff4db0 100%);
       border: none;
       color: #fff;
-      padding: 12px 24px;
-      border-radius: 5px;
+      padding: clamp(14px, 3vh, 18px) clamp(40px, 8vw, 72px);
+      border-radius: 999px;
       cursor: pointer;
-      font-size: 1rem;
-      transition: transform 0.3s ease;
-      box-shadow: var(--shadow);
+      font-size: clamp(1rem, 1.9vw, 1.3rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 18px 40px rgba(255,0,128,0.45);
     }
     .modal-buttons button:hover {
-      transform: scale(1.05);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 22px 55px rgba(255,0,128,0.55);
+    }
+    .modal-buttons button:focus-visible {
+      outline: 2px solid rgba(255,255,255,0.8);
+      outline-offset: 4px;
     }
     .close {
       position: absolute;
-      top: 10px;
-      right: 15px;
-      color: #fff;
-      font-size: 28px;
+      top: 14px;
+      right: 18px;
+      color: rgba(255,255,255,0.85);
+      font-size: 32px;
       font-weight: bold;
       cursor: pointer;
+      transition: transform 0.2s ease, color 0.2s ease;
+      z-index: 3;
+    }
+    .close:hover {
+      transform: scale(1.1);
+      color: #fff;
     }
 
     /* Page layout */
@@ -782,6 +845,19 @@
     </div>
   </div>
 
+  <div id="wednesdayModal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="wednesdayModalTitle">
+    <div class="modal-content">
+      <span class="close" id="wednesdayClose" aria-label="Close popup">&times;</span>
+      <div class="modal-highlight"><i class="fas fa-bolt"></i><span>Midweek Surprise</span></div>
+      <h2 id="wednesdayModalTitle">Wednesday Switch-Up!</h2>
+      <p class="modal-message">Every Wednesday brings a new workout experience, so it’s shown differently.
+Watch till the end to feel the full energy of Wednesdays</p>
+      <div class="modal-buttons">
+        <button id="wednesdayContinue">Got it!</button>
+      </div>
+    </div>
+  </div>
+
   <div class="services-intro-overlay" id="servicesIntro">
     <button type="button" class="services-intro-skip" id="servicesSkipBtn" aria-label="Skip intro">
       <i class="fas fa-forward"></i>
@@ -822,7 +898,7 @@
             </div>
           </div>
         </div>
-        <div class="services-intro-stage stage-secondary" data-title="Wednesday Sessions , this is just a demo" data-mode="sequential">
+        <div class="services-intro-stage stage-secondary" data-title="Only a glimpse! Our Wednesdays are packed with many more fun workouts. " data-mode="sequential">
           <div class="services-intro-stack">
             <div class="services-intro-card" data-label="Wednesday">
               <h3>We try to remove that stubborn side fat </h3>
@@ -1045,10 +1121,80 @@
   </footer>
 
   <script>
+    let wednesdayModalRef = null;
+    let wednesdayContinueRef = null;
+    let wednesdayCloseRef = null;
+    let wednesdayModalActive = false;
+    let wednesdayActionQueue = [];
+
+    function openWednesdayModal(initialAction) {
+      if (!wednesdayModalRef) {
+        if (typeof initialAction === 'function') initialAction();
+        return;
+      }
+      wednesdayModalActive = true;
+      wednesdayActionQueue = [];
+      if (typeof initialAction === 'function') {
+        wednesdayActionQueue.push(initialAction);
+      }
+      wednesdayModalRef.style.display = 'flex';
+      wednesdayModalRef.setAttribute('aria-hidden', 'false');
+      if (wednesdayContinueRef) {
+        try {
+          wednesdayContinueRef.focus();
+        } catch (err) {
+          // focus may fail; safe to ignore
+        }
+      }
+    }
+
+    function enqueueWednesdayAction(action) {
+      if (typeof action !== 'function') return;
+      if (wednesdayModalActive) {
+        wednesdayActionQueue.push(action);
+      } else {
+        action();
+      }
+    }
+
+    function closeWednesdayModal(shouldProceed) {
+      if (wednesdayModalRef) {
+        wednesdayModalRef.style.display = 'none';
+        wednesdayModalRef.setAttribute('aria-hidden', 'true');
+      }
+      const tasks = shouldProceed ? [...wednesdayActionQueue] : [];
+      wednesdayActionQueue = [];
+      wednesdayModalActive = false;
+      tasks.forEach(task => {
+        try {
+          task();
+        } catch (err) {
+          // ignore follow-up task failures
+        }
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const intro = document.getElementById('servicesIntro');
       const content = document.querySelector('.services-content');
       const skipBtn = document.getElementById('servicesSkipBtn');
+      wednesdayModalRef = document.getElementById('wednesdayModal');
+      wednesdayContinueRef = document.getElementById('wednesdayContinue');
+      wednesdayCloseRef = document.getElementById('wednesdayClose');
+
+      if (wednesdayContinueRef) {
+        wednesdayContinueRef.addEventListener('click', () => closeWednesdayModal(true));
+      }
+      if (wednesdayCloseRef) {
+        wednesdayCloseRef.addEventListener('click', () => closeWednesdayModal(true));
+      }
+      if (wednesdayModalRef) {
+        wednesdayModalRef.addEventListener('click', (event) => {
+          if (event.target === wednesdayModalRef) {
+            closeWednesdayModal(true);
+          }
+        });
+      }
 
       if (!intro || !content) {
         if (content) content.classList.add('ready');
@@ -1141,6 +1287,8 @@
       if (skipBtn) {
         skipBtn.addEventListener('click', () => finalizeIntro(true));
       }
+
+      let wednesdayPopupSeen = false;
 
       const playStage = (stageIndex) => {
         if (introComplete) return;
@@ -1274,7 +1422,7 @@
               // ignore
             }
           }
-          setTimeout(() => {
+          const revealCard = () => {
             if (transitioned) return;
             card.classList.add('visible');
             if (video) {
@@ -1297,6 +1445,21 @@
             if (stageIndex === 0 && idx === 2 && content) {
               window.scrollTo({ top: content.offsetTop, behavior: 'smooth' });
             }
+          };
+
+          setTimeout(() => {
+            if (transitioned) return;
+            if (stageIndex === 0 && idx === 2 && !wednesdayPopupSeen) {
+              wednesdayPopupSeen = true;
+              openWednesdayModal(() => setTimeout(revealCard, 0));
+              return;
+            }
+            if (stageIndex === 0 && idx > 2 && wednesdayPopupSeen) {
+              const postModalDelay = Math.min(revealInterval, 1200) * (idx - 2);
+              enqueueWednesdayAction(() => setTimeout(revealCard, postModalDelay));
+              return;
+            }
+            revealCard();
           }, idx * revealInterval);
         });
       };
@@ -1351,6 +1514,7 @@
     window.onclick = function(event) {
       const testimonialsModal = document.getElementById('testimonialsModal');
       if (event.target === testimonialsModal) closeTestimonialsPopup();
+      if (event.target === wednesdayModalRef) closeWednesdayModal(true);
     };
 
     window.addEventListener('load', () => {
