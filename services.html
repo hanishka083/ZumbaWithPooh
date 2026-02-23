@@ -526,6 +526,43 @@
       outline: 2px solid rgba(255,255,255,0.8);
       outline-offset: 4px;
     }
+    .finale-burst {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: linear-gradient(120deg, rgba(255,102,178,0.25), rgba(255,0,128,0.35));
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #ffe9f7;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: clamp(10px, 3vh, 18px);
+      box-shadow: 0 15px 38px rgba(255,0,128,0.42);
+    }
+    .finale-burst i {
+      color: #ff9bd6;
+      font-size: 1.2em;
+    }
+    .finale-message {
+      font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+      font-weight: 600;
+      color: #ffe1f3;
+    }
+    .finale-message .finale-brand {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff9bd6, #ff0080 70%, #ff4db0 100%);
+      color: #fff;
+      font-weight: 800;
+      text-shadow: 0 0 12px rgba(255,0,128,0.55);
+    }
+    .finale-actions button {
+      background: linear-gradient(135deg, #ffd166, #ff0080 70%, #ff66b2 100%);
+    }
     .close {
       position: absolute;
       top: 14px;
@@ -858,6 +895,18 @@ Watch till the end to feel the full energy of Wednesdays</p>
     </div>
   </div>
 
+  <div id="wednesdayFinaleModal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="wednesdayFinaleTitle">
+    <div class="modal-content">
+      <span class="close" id="wednesdayFinaleClose" aria-label="Close popup">&times;</span>
+      <div class="finale-burst"><i class="fas fa-fire"></i><span>Sukoon ke 40-45 min</span></div>
+      <h2 id="wednesdayFinaleTitle">Ready For The Last 40?</h2>
+      <p class="modal-message finale-message">After every workout routine, we end the day with 40 minutes of energetic Zumba. But this will not be shown here, to experience this you have to come <span class="finale-brand">ZumbaWithPooh</span></p>
+      <div class="modal-buttons finale-actions">
+        <button id="wednesdayFinaleConfirm">Take Me There!</button>
+      </div>
+    </div>
+  </div>
+
   <div class="services-intro-overlay" id="servicesIntro">
     <button type="button" class="services-intro-skip" id="servicesSkipBtn" aria-label="Skip intro">
       <i class="fas fa-forward"></i>
@@ -1001,23 +1050,25 @@ Watch till the end to feel the full energy of Wednesdays</p>
           <div class="time-card">
             <h4>Morning Batches</h4>
             <ul>
-              <li>8:30 AM – 10:00 AM</li>
-              <li>8:00 AM – 9:30 AM</li>
+              <li>8:00 AM</li>
+              <li>9:00 AM</li>
             </ul>
           </div>
           <div class="time-card">
             <h4>Evening Batches</h4>
             <ul>
-              <li>6:30 PM – 8:30 PM</li>
-              <li>7:00 PM – 9:00 PM</li>
-              <li>8:30 PM – 10:00 PM</li>
+              <li>6:30 PM</li>
+              <li>7:00 PM</li>
+              <li>8:30 PM</li>
             </ul>
           </div>
           <div class="time-card">
             <h4>Personal Training Slots</h4>
             <ul>
-              <li>Morning: 10:00 AM – 11:00 AM</li>
-              <li>Evening: 8:00 PM – 9:00 PM</li>
+              <li>Morning: 10:00 AM</li>
+              <li>Evening: 5:30 PM </li>
+              <li>Evening: 8:00 PM </li>
+              
             </ul>
           </div>
         </div>
@@ -1027,21 +1078,23 @@ Watch till the end to feel the full energy of Wednesdays</p>
           <div class="time-card">
             <h4>Morning Batches</h4>
             <ul>
-              <li>9:00 AM – 10:30 AM</li>
+              <li>9:00 AM</li>
+              <li>10:00 AM</li>
             </ul>
           </div>
           <div class="time-card">
             <h4>Evening Batches</h4>
             <ul>
-              <li>7:15 PM – 8:30 PM</li>
-              <li>8:30 PM – 10:00 PM</li>
+              <li>7:15 PM </li>
+              <li>8:30 PM</li>
             </ul>
           </div>
           <div class="time-card">
             <h4>Personal Training Slots</h4>
             <ul>
-              <li>Morning - 10:30 AM – 11:30 AM</li>
-              <li>Evening - 10:00 PM – 11:00 PM</li>
+              <li>Morning - 10:30 AM</li>
+              <li>Evening - 7:00 PM</li>
+              <li>Evening - 10:00 PM</li>
             </ul>
           </div>
         </div>
@@ -1067,18 +1120,27 @@ Watch till the end to feel the full energy of Wednesdays</p>
             <h4>Zumba + PT</h4>
             <ul>
               <li>1 Month – 3000</li>
-              <li>3 Months – 8500</li>
+              <li>3 Months – 8000</li>
               <li>6 Months – 14000</li>
-              <li>1 Year – 20000</li>
+              <li>1 Year – 22000</li>
             </ul>
           </div>
           <div class="time-card">
             <h4>PT Only</h4>
             <ul>
-              <li>1 Month – 1800</li>
+              <li>1 Month – 2000</li>
               <li>3 Months – 4800</li>
-              <li>6 Months – 8800</li>
-              <li>12 Months – 15000</li>
+              <li>6 Months – 8500</li>
+              <li>12 Months – 16000</li>
+            </ul>
+          </div>
+          <div class="time-card">
+            <h4>Personal Time PT Only</h4>
+            <ul>
+              <li>1 Month – 4000</li>
+              <li>3 Months – 10000</li>
+              <li>6 Months – 18000</li>
+              <li>12 Months – 30000</li>
             </ul>
           </div>
         </div>
@@ -1126,6 +1188,10 @@ Watch till the end to feel the full energy of Wednesdays</p>
     let wednesdayCloseRef = null;
     let wednesdayModalActive = false;
     let wednesdayActionQueue = [];
+    let wednesdayFinaleModalRef = null;
+    let wednesdayFinaleCloseRef = null;
+    let wednesdayFinaleConfirmRef = null;
+    let wednesdayFinaleSeen = false;
 
     function openWednesdayModal(initialAction) {
       if (!wednesdayModalRef) {
@@ -1174,6 +1240,31 @@ Watch till the end to feel the full energy of Wednesdays</p>
       });
     }
 
+    function openWednesdayFinaleModal() {
+      if (wednesdayFinaleSeen) return;
+      if (!wednesdayFinaleModalRef) {
+        wednesdayFinaleSeen = true;
+        return;
+      }
+      wednesdayFinaleSeen = true;
+      wednesdayFinaleModalRef.style.display = 'flex';
+      wednesdayFinaleModalRef.setAttribute('aria-hidden', 'false');
+      if (wednesdayFinaleConfirmRef) {
+        try {
+          wednesdayFinaleConfirmRef.focus();
+        } catch (err) {
+          // ignore focus issues
+        }
+      }
+    }
+
+    function closeWednesdayFinaleModal() {
+      if (wednesdayFinaleModalRef) {
+        wednesdayFinaleModalRef.style.display = 'none';
+        wednesdayFinaleModalRef.setAttribute('aria-hidden', 'true');
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const intro = document.getElementById('servicesIntro');
       const content = document.querySelector('.services-content');
@@ -1181,6 +1272,9 @@ Watch till the end to feel the full energy of Wednesdays</p>
       wednesdayModalRef = document.getElementById('wednesdayModal');
       wednesdayContinueRef = document.getElementById('wednesdayContinue');
       wednesdayCloseRef = document.getElementById('wednesdayClose');
+      wednesdayFinaleModalRef = document.getElementById('wednesdayFinaleModal');
+      wednesdayFinaleCloseRef = document.getElementById('wednesdayFinaleClose');
+      wednesdayFinaleConfirmRef = document.getElementById('wednesdayFinaleConfirm');
 
       if (wednesdayContinueRef) {
         wednesdayContinueRef.addEventListener('click', () => closeWednesdayModal(true));
@@ -1192,6 +1286,20 @@ Watch till the end to feel the full energy of Wednesdays</p>
         wednesdayModalRef.addEventListener('click', (event) => {
           if (event.target === wednesdayModalRef) {
             closeWednesdayModal(true);
+          }
+        });
+      }
+
+      if (wednesdayFinaleConfirmRef) {
+        wednesdayFinaleConfirmRef.addEventListener('click', () => closeWednesdayFinaleModal());
+      }
+      if (wednesdayFinaleCloseRef) {
+        wednesdayFinaleCloseRef.addEventListener('click', () => closeWednesdayFinaleModal());
+      }
+      if (wednesdayFinaleModalRef) {
+        wednesdayFinaleModalRef.addEventListener('click', (event) => {
+          if (event.target === wednesdayFinaleModalRef) {
+            closeWednesdayFinaleModal();
           }
         });
       }
@@ -1380,6 +1488,9 @@ Watch till the end to feel the full energy of Wednesdays</p>
               completedCount += 1;
               const nextIndex = cardIndex + 1;
               if (completedCount >= expectedCount || nextIndex >= stage.cards.length) {
+                if (stageIndex === 1 && !wednesdayFinaleSeen) {
+                  openWednesdayFinaleModal();
+                }
                 proceed();
               } else {
                 setTimeout(() => showCard(nextIndex), 420);
