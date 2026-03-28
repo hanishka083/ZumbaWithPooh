@@ -1966,46 +1966,55 @@
     if (!file) return;
     const statusEl = document.getElementById('uploadStatus');
     try {
-      statusEl.textContent = `Uploading Card ${cardNum} ${type} image to Cloudinary...`;
+      statusEl.textContent = `Uploading Card ${cardNum} ${type} image...`;
       statusEl.style.color = '#ffa500';
-      // Upload to Cloudinary
+
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-      formData.append('folder', `${BRANCH_KEY}/${type}`);
-      formData.append('public_id', `${type}_${cardNum}_${Date.now()}`);
+      formData.append('image', file);
+      formData.append('branch', BRANCH_KEY);
+      formData.append('cardNum', String(cardNum));
+      formData.append('slot', type);
+
       let response, data;
       try {
-        response = await fetch(CLOUDINARY_UPLOAD_URL, {
+        response = await fetch(`${API_BASE}/upload`, {
           method: 'POST',
           body: formData
         });
       } catch (err) {
-        statusEl.textContent = '❌ Network error uploading to Cloudinary.';
+        statusEl.textContent = '❌ Network error while uploading image.';
         statusEl.style.color = '#ff6b6b';
-        console.error('Cloudinary network error:', err);
+        console.error('Upload network error:', err);
         return;
       }
+
       if (!response.ok) {
-        let errMsg = 'Cloudinary upload failed';
+        let errMsg = 'Image upload failed';
         try {
           data = await response.json();
-          if (data && data.error && data.error.message) errMsg += ': ' + data.error.message;
-        } catch {}
+          if (data && data.error) errMsg += ': ' + data.error;
+        } catch (parseErr) {
+          try {
+            const textErr = await response.text();
+            if (textErr) errMsg += ': ' + textErr;
+          } catch (_) {}
+        }
         statusEl.textContent = '❌ ' + errMsg;
         statusEl.style.color = '#ff6b6b';
-        console.error('Cloudinary upload error:', response.status, data);
+        console.error('Upload API error:', response.status, data);
         return;
       }
+
       data = await response.json();
-      if (!data.secure_url) {
-        statusEl.textContent = '❌ Cloudinary did not return a URL.';
+      if (!data.url) {
+        statusEl.textContent = '❌ Upload API did not return image URL.';
         statusEl.style.color = '#ff6b6b';
-        console.error('Cloudinary response:', data);
+        console.error('Upload API response:', data);
         return;
       }
-      const downloadURL = data.secure_url;
-      statusEl.textContent = 'Image uploaded to Cloudinary.';
+
+      const downloadURL = data.url;
+      statusEl.textContent = 'Image uploaded.';
       
       // Update image display
       const img = document.getElementById(`${type}-img-${cardNum}`);
@@ -2014,17 +2023,7 @@
         img.src = getOptimizedImage(downloadURL, getTargetWidth());
       }
 
-      // Persist the updated image URLs into the backend so refresh keeps them.
-      const saved = await saveAllCardData();
-      if (!saved) {
-        statusEl.textContent = '⚠️ Image uploaded, but saving failed.';
-        statusEl.style.color = '#ffa500';
-        return;
-      }
-      
-      // No Firestore: skip meta data save
-      
-      statusEl.textContent = `✓ Card ${cardNum} ${type} image uploaded to cloud!`;
+      statusEl.textContent = `✓ Card ${cardNum} ${type} image uploaded and saved!`;
       statusEl.style.color = '#11b19b';
       
     } catch (error) {

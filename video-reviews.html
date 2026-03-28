@@ -274,6 +274,26 @@
     color: #ccc;
     font-size: 0.9rem;
   }
+  .video-delete-btn {
+    margin-top: 10px;
+    align-self: flex-start;
+    background: linear-gradient(135deg, #ff4d4d, #d60000);
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .video-delete-btn:hover {
+    transform: scale(1.04);
+  }
+  .video-delete-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+  }
   .modal {
     position: fixed;
     inset: 0;
@@ -483,10 +503,6 @@
     const maxVideos = 10;
     let videoList = [];
 
-    const CLOUDINARY_CLOUD_NAME = 'dydajkqdk';
-    const CLOUDINARY_UPLOAD_PRESET = 'ZumbaWithPooh';
-    const CLOUDINARY_VIDEO_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`;
-
     const DEPLOYED_API_BASE = 'https://zumbawithpooh.onrender.com/api';
     const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
       ? 'http://localhost:5000/api'
@@ -552,6 +568,14 @@
         info.appendChild(namePara);
       }
 
+      if (localStorage.getItem('adminLoggedIn') === 'true') {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'video-delete-btn';
+        deleteBtn.textContent = 'Delete Video';
+        deleteBtn.addEventListener('click', () => deleteVideo(video, deleteBtn));
+        info.appendChild(deleteBtn);
+      }
+
       item.appendChild(videoEl);
       item.appendChild(info);
       return item;
@@ -569,6 +593,85 @@
       videoList.forEach((video, index) => {
         videosGrid.appendChild(createVideoCard(video, index));
       });
+    }
+
+    async function deleteVideo(video, buttonEl) {
+      const videoId = video?._id || video?.id;
+
+      if (!videoId) {
+        alert('Unable to delete this video. Missing id.');
+        return;
+      }
+
+      const confirmDelete = confirm('Delete this video review? This cannot be undone.');
+      if (!confirmDelete) return;
+
+      if (buttonEl) {
+        buttonEl.disabled = true;
+        buttonEl.textContent = 'Deleting...';
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/videos/${encodeURIComponent(videoId)}`, {
+          method: 'DELETE'
+        });
+
+        if (response.status === 409) {
+          let conflictData = null;
+          try {
+            conflictData = await response.json();
+          } catch (parseErr) {
+            // Ignore parse errors and keep generic conflict handling.
+          }
+
+          const conflictMessage = conflictData?.error || 'Video belongs to a different Cloudinary cloud than current server credentials';
+          const allowDbOnlyCleanup = !!conflictData?.canForceDbOnly;
+
+          if (allowDbOnlyCleanup) {
+            const cleanupConfirmed = confirm(`${conflictMessage}\n\nThis video is from an old Cloudinary account.\nClick OK to remove it from website list only (Cloudinary file in old account will remain).`);
+
+            if (cleanupConfirmed) {
+              const fallbackResponse = await fetch(`${API_BASE}/videos/${encodeURIComponent(videoId)}?forceDbOnly=true`, {
+                method: 'DELETE'
+              });
+
+              if (!fallbackResponse.ok) {
+                throw new Error('Could not remove legacy video record from database');
+              }
+
+              videoList = videoList.filter((entry) => (entry._id || entry.id) !== videoId);
+              renderVideos();
+              return;
+            }
+          }
+
+          throw new Error(conflictMessage);
+        }
+
+        if (!response.ok) {
+          let errorMessage = 'Failed to delete video';
+          try {
+            const errData = await response.json();
+            if (errData && errData.error) {
+              errorMessage = errData.error;
+            }
+          } catch (parseErr) {
+            // Ignore parse failures and keep default message.
+          }
+          throw new Error(errorMessage);
+        }
+
+        videoList = videoList.filter((entry) => (entry._id || entry.id) !== videoId);
+        renderVideos();
+      } catch (error) {
+        console.error('Error deleting video:', error);
+        alert(`Could not delete the video. ${error.message || 'Please try again.'}`);
+
+        if (buttonEl) {
+          buttonEl.disabled = false;
+          buttonEl.textContent = 'Delete Video';
+        }
+      }
     }
 
     async function fetchVideos() {
@@ -593,26 +696,26 @@
       }
     }
 
-    async function registerVideoWithServer(videoURL, file, cloudinaryResponse) {
-      const rawName = file?.name || '';
-      const titleFromFile = rawName ? rawName.replace(/\.[^/.]+$/, '') : '';
+    async function uploadVideoViaServer(file) {
+      const formData = new FormData();
+      formData.append('video', file);
 
-      const payload = {
-        url: videoURL,
-        fileName: rawName,
-        mimeType: file?.type || '',
-        publicId: cloudinaryResponse?.public_id || '',
-        title: cloudinaryResponse?.original_filename || titleFromFile
-      };
-
-      const response = await fetch(`${API_BASE}/videos`, {
+      const response = await fetch(`${API_BASE}/videos/upload`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: formData
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save video details');
+        let message = 'Failed to upload video';
+        try {
+          const errData = await response.json();
+          if (errData && errData.error) {
+            message = errData.error;
+          }
+        } catch (parseErr) {
+          // Ignore parse failures and keep default message.
+        }
+        throw new Error(message);
       }
 
       return response.json();
@@ -623,6 +726,7 @@
       if (editBtn) editBtn.style.display = isAdmin ? 'inline-block' : 'none';
       if (logoutBtn) logoutBtn.style.display = isAdmin ? 'inline-block' : 'none';
       if (uploadSection) uploadSection.style.display = isAdmin ? 'block' : 'none';
+      renderVideos();
     }
 
     function adminLogin() {
@@ -668,27 +772,9 @@
         }
 
         try {
-          if (uploadStatus) uploadStatus.textContent = 'Uploading video to Cloudinary...';
+          if (uploadStatus) uploadStatus.textContent = 'Uploading video...';
 
-          const formData = new FormData();
-          formData.append('file', file);
-          formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-          formData.append('folder', 'video-reviews');
-          formData.append('public_id', `review_${Date.now()}`);
-          formData.append('resource_type', 'video');
-
-          const response = await fetch(CLOUDINARY_VIDEO_UPLOAD_URL, {
-            method: 'POST',
-            body: formData
-          });
-
-          if (!response.ok) {
-            throw new Error('Cloudinary upload failed');
-          }
-
-          const data = await response.json();
-          const videoURL = data.secure_url;
-          const savedVideo = await registerVideoWithServer(videoURL, file, data);
+          const savedVideo = await uploadVideoViaServer(file);
 
           videoList = [savedVideo, ...videoList];
           if (videoList.length > maxVideos) {

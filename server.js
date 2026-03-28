@@ -15,6 +15,13 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+function readEnv(name) {
+  const raw = process.env[name];
+  if (typeof raw !== 'string') return '';
+  // Remove accidental wrapping quotes/spaces copied into .env values.
+  return raw.trim().replace(/^['\"]|['\"]$/g, '');
+}
+
 /* =========================
    MIDDLEWARE
 ========================= */
@@ -50,16 +57,27 @@ mongoose.connect(MONGODB_URI)
    CLOUDINARY CONFIG
 ========================= */
 
+const CLOUDINARY_CLOUD_NAME = readEnv('CLOUDINARY_CLOUD_NAME') || readEnv('CLOUD_NAME');
+const CLOUDINARY_API_KEY = readEnv('CLOUDINARY_API_KEY') || readEnv('CLOUD_API_KEY');
+const CLOUDINARY_API_SECRET = readEnv('CLOUDINARY_API_SECRET') || readEnv('CLOUD_API_SECRET');
+
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  cloud_name: CLOUDINARY_CLOUD_NAME,
+  api_key: CLOUDINARY_API_KEY,
+  api_secret: CLOUDINARY_API_SECRET
 });
 
-if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
   console.error('❌ Missing one or more Cloudinary env vars: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET');
   process.exit(1);
 }
+
+cloudinary.api.ping()
+  .then(() => console.log('✅ Cloudinary credentials verified'))
+  .catch((err) => {
+    console.error('❌ Cloudinary API credential check failed. Verify CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET belong to the same account.');
+    console.error('❌ Cloudinary error:', err?.message || err);
+  });
 
 /* =========================
    EMAIL (CONTACT NOTIFICATIONS)
@@ -169,6 +187,44 @@ const videoReviewSchema = new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now }
 });
 const VideoReview = mongoose.model('VideoReview', videoReviewSchema);
+
+function extractCloudinaryPublicIdFromUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+
+  try {
+    const parsed = new URL(url);
+    const pathParts = parsed.pathname.split('/').filter(Boolean);
+    const uploadIndex = pathParts.findIndex((part) => part === 'upload');
+    if (uploadIndex === -1 || uploadIndex + 1 >= pathParts.length) return '';
+
+    const afterUpload = pathParts.slice(uploadIndex + 1);
+
+    // Skip Cloudinary version segment (e.g., v1712345678) if present.
+    if (afterUpload[0] && /^v\d+$/.test(afterUpload[0])) {
+      afterUpload.shift();
+    }
+
+    if (!afterUpload.length) return '';
+
+    const joined = afterUpload.join('/');
+    return joined.replace(/\.[^/.]+$/, '');
+  } catch (err) {
+    return '';
+  }
+}
+
+function extractCloudinaryCloudNameFromUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+
+  try {
+    const parsed = new URL(url);
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    // Expected URL shape: /<cloud_name>/<resource_type>/upload/...
+    return parts[0] || '';
+  } catch (err) {
+    return '';
+  }
+}
 
 /* =========================
    ROUTES
@@ -409,6 +465,49 @@ app.get('/api/contact/inquiries', async (req, res) => {
 });
 
 // ✅ Video reviews
+app.post('/api/videos/upload', upload.single('video'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'Missing video file' });
+  }
+
+  if (!req.file.mimetype || !req.file.mimetype.startsWith('video/')) {
+    return res.status(400).json({ error: 'Only video files are allowed' });
+  }
+
+  try {
+    const uploaded = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          resource_type: 'video',
+          folder: 'video-reviews',
+          public_id: `review_${Date.now()}`
+        },
+        (err, result) => {
+          if (result) resolve(result);
+          else reject(err);
+        }
+      );
+
+      streamifier.createReadStream(req.file.buffer).pipe(stream);
+    });
+
+    const titleFromFile = (req.file.originalname || '').replace(/\.[^/.]+$/, '');
+
+    const video = await VideoReview.create({
+      url: uploaded.secure_url,
+      title: uploaded.original_filename || titleFromFile,
+      fileName: req.file.originalname || '',
+      mimeType: req.file.mimetype || '',
+      publicId: uploaded.public_id || ''
+    });
+
+    res.status(201).json(video);
+  } catch (err) {
+    console.error('Failed to upload video:', err);
+    res.status(500).json({ error: 'Failed to upload video' });
+  }
+});
+
 app.post('/api/videos', async (req, res) => {
   const { url, title = '', fileName = '', mimeType = '', publicId = '' } = req.body || {};
 
@@ -432,6 +531,100 @@ app.get('/api/videos', async (req, res) => {
   } catch (err) {
     console.error('Failed to load videos:', err);
     res.status(500).json({ error: 'Failed to load videos' });
+  }
+});
+
+app.delete('/api/videos/:id', async (req, res) => {
+  const { id } = req.params;
+  const forceDbOnly = String(req.query.forceDbOnly || '').toLowerCase() === 'true';
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid video id' });
+  }
+
+  try {
+    const video = await VideoReview.findById(id);
+    if (!video) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+
+    const videoCloudName = extractCloudinaryCloudNameFromUrl(video.url);
+    if (videoCloudName && videoCloudName !== CLOUDINARY_CLOUD_NAME) {
+      if (forceDbOnly) {
+        await VideoReview.findByIdAndDelete(id);
+        return res.json({
+          success: true,
+          id,
+          forceDbOnly: true,
+          warning: 'Database record removed. Cloudinary asset remains in legacy cloud account.'
+        });
+      }
+
+      return res.status(409).json({
+        error: 'Video belongs to a different Cloudinary cloud than current server credentials',
+        videoCloudName,
+        configuredCloudName: CLOUDINARY_CLOUD_NAME,
+        canForceDbOnly: true,
+        hint: 'Use forceDbOnly=true to remove the website record only when the asset belongs to a legacy cloud account'
+      });
+    }
+
+    const storedPublicId = (video.publicId || '').trim();
+    const urlDerivedPublicId = extractCloudinaryPublicIdFromUrl(video.url);
+    const cloudinaryCandidates = [storedPublicId, urlDerivedPublicId].filter((value, idx, arr) => value && arr.indexOf(value) === idx);
+
+    if (cloudinaryCandidates.length) {
+      let deletedFromCloudinary = false;
+      let lastCloudinaryError = '';
+
+      for (const candidate of cloudinaryCandidates) {
+        try {
+          const cloudinaryResult = await cloudinary.uploader.destroy(candidate, {
+            resource_type: 'video',
+            invalidate: true
+          });
+
+          // Cloudinary returns "ok" for deleted assets and "not found" when already absent.
+          if (cloudinaryResult?.result === 'ok' || cloudinaryResult?.result === 'not found') {
+            deletedFromCloudinary = true;
+            if (cloudinaryResult?.result === 'not found') {
+              console.warn('⚠️ Cloudinary video asset already missing:', candidate);
+            }
+            break;
+          }
+
+          lastCloudinaryError = `Unexpected Cloudinary response: ${JSON.stringify(cloudinaryResult)}`;
+        } catch (cloudErr) {
+          lastCloudinaryError = cloudErr?.message || 'Unknown Cloudinary delete failure';
+        }
+      }
+
+      if (!deletedFromCloudinary) {
+        console.error('❌ Failed to delete video from Cloudinary:', lastCloudinaryError);
+        const errorText = String(lastCloudinaryError || '');
+        const isAuthMismatch = /api_secret mismatch|invalid signature/i.test(errorText);
+
+        if (isAuthMismatch) {
+          return res.status(401).json({
+            error: 'Cloudinary credentials are invalid for delete operation',
+            details: errorText,
+            configuredCloudName: CLOUDINARY_CLOUD_NAME,
+            hint: 'Verify CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET from the same Cloudinary account'
+          });
+        }
+
+        return res.status(502).json({
+          error: 'Failed to delete video file from Cloudinary',
+          details: errorText
+        });
+      }
+    }
+
+    await VideoReview.findByIdAndDelete(id);
+    res.json({ success: true, id });
+  } catch (err) {
+    console.error('Failed to delete video:', err);
+    res.status(500).json({ error: 'Failed to delete video' });
   }
 });
 
