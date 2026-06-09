@@ -1028,7 +1028,7 @@
     </div>
     <div class="footer-item">
       <i class="fas fa-envelope"></i>
-      <span>info@zumbawithpooh.com</span>
+        <span>poojarupani1995@gmail.com</span>
     </div>
   </div>
 </footer>
@@ -1049,6 +1049,9 @@
   const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:5000/api'
     : DEPLOYED_API_BASE;
+  const CARD_CACHE_KEY = 'zumba_branch2_cards_cache';
+  const CARD_CACHE_TTL_MS = 5 * 60 * 1000;
+
   function getTargetWidth() {
     if (typeof window === 'undefined') return 1200;
     const viewport = window.innerWidth || 0;
@@ -1075,6 +1078,64 @@
     }
     const transformation = 'f_auto,q_auto:eco,c_limit,w_' + width;
     return prefix + '/upload/' + transformation + '/' + suffix;
+  }
+
+  function readCardCache() {
+    try {
+      const raw = localStorage.getItem(CARD_CACHE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || Date.now() - parsed.ts > CARD_CACHE_TTL_MS || !Array.isArray(parsed.cards)) return null;
+      return parsed.cards;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function writeCardCache(cards) {
+    try {
+      localStorage.setItem(CARD_CACHE_KEY, JSON.stringify({ ts: Date.now(), cards }));
+    } catch (err) {}
+  }
+
+  function clearCardCache() {
+    try {
+      localStorage.removeItem(CARD_CACHE_KEY);
+    } catch (err) {}
+  }
+
+  function applyCardData(data) {
+    const width = getTargetWidth();
+    for (const cardNum of getBranchCardNumbers()) {
+      const card = (data.cards || []).find(c => c.cardNum === cardNum) || {};
+      const beforeEl = document.getElementById(`before-img-${cardNum}`);
+      const afterEl = document.getElementById(`after-img-${cardNum}`);
+      if (beforeEl) {
+        if (card.beforeImg) {
+          beforeEl.dataset.fullsrc = card.beforeImg;
+          beforeEl.src = getOptimizedImage(card.beforeImg, width);
+        } else {
+          delete beforeEl.dataset.fullsrc;
+          beforeEl.src = `BR2_BEFORE${cardNum}.jpg`;
+        }
+      }
+      if (afterEl) {
+        if (card.afterImg) {
+          afterEl.dataset.fullsrc = card.afterImg;
+          afterEl.src = getOptimizedImage(card.afterImg, width);
+        } else {
+          delete afterEl.dataset.fullsrc;
+          afterEl.src = `BR2_AFTER${cardNum}.jpg`;
+        }
+      }
+      const fallback = [card.name, card.beforeWeight, card.afterWeight]
+        .filter(Boolean)
+        .join(' • ');
+      const detailsEl = document.getElementById(`details-${cardNum}`);
+      if (detailsEl) {
+        detailsEl.value = card.details || fallback || '';
+      }
+    }
   }
   
   function toggleSidebar() {
@@ -1200,6 +1261,7 @@
         saveStatus.textContent = '✓ All changes saved!';
         saveStatus.style.color = '#11b19b';
       }
+      clearCardCache();
       return true;
     } catch (e) {
       if (showStatus && saveStatus) {
@@ -1239,41 +1301,15 @@
   // Load card data from backend
   async function loadAllCardData() {
     try {
+      const cachedCards = readCardCache();
+      if (cachedCards) {
+        applyCardData({ cards: cachedCards });
+      }
       const response = await fetch(`${API_BASE}/load-cards?branch=${BRANCH_KEY}`);
       if (!response.ok) return;
       const data = await response.json();
-      // Always clear and set all fields for all users
-      const width = getTargetWidth();
-      for (const cardNum of getBranchCardNumbers()) {
-        const card = (data.cards || []).find(c => c.cardNum === cardNum) || {};
-        const beforeEl = document.getElementById(`before-img-${cardNum}`);
-        const afterEl = document.getElementById(`after-img-${cardNum}`);
-        if (beforeEl) {
-          if (card.beforeImg) {
-            beforeEl.dataset.fullsrc = card.beforeImg;
-            beforeEl.src = getOptimizedImage(card.beforeImg, width);
-          } else {
-            delete beforeEl.dataset.fullsrc;
-            beforeEl.src = `BR2_BEFORE${cardNum}.jpg`;
-          }
-        }
-        if (afterEl) {
-          if (card.afterImg) {
-            afterEl.dataset.fullsrc = card.afterImg;
-            afterEl.src = getOptimizedImage(card.afterImg, width);
-          } else {
-            delete afterEl.dataset.fullsrc;
-            afterEl.src = `BR2_AFTER${cardNum}.jpg`;
-          }
-        }
-        const fallback = [card.name, card.beforeWeight, card.afterWeight]
-          .filter(Boolean)
-          .join(' • ');
-        const detailsEl = document.getElementById(`details-${cardNum}`);
-        if (detailsEl) {
-          detailsEl.value = card.details || fallback || '';
-        }
-      }
+      applyCardData(data);
+      writeCardCache(data.cards || []);
     } catch (e) {
       // Optionally show error
     }
@@ -1344,6 +1380,7 @@
 
       statusEl.textContent = `✓ Card ${cardNum} ${type} image uploaded and saved!`;
       statusEl.style.color = '#11b19b';
+      clearCardCache();
       
     } catch (error) {
       console.error('Error uploading image:', error);

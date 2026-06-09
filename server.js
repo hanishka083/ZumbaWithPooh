@@ -146,6 +146,7 @@ const cardDataSchema = new mongoose.Schema({
     }
   ]
 });
+cardDataSchema.index({ branch: 1 });
 const CardData = mongoose.model('CardData', cardDataSchema);
 
 // Image schema
@@ -165,6 +166,7 @@ const offerSchema = new mongoose.Schema({
   imageUrl: { type: String, default: '' },
   updatedAt: { type: Date, default: Date.now }
 });
+offerSchema.index({ key: 1 }, { unique: true });
 const Offer = mongoose.model('Offer', offerSchema);
 
 // Contact inquiry schema
@@ -187,6 +189,33 @@ const videoReviewSchema = new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now }
 });
 const VideoReview = mongoose.model('VideoReview', videoReviewSchema);
+
+const CACHE_TTL_MS = 60 * 1000;
+const branchCardsCache = new Map();
+const latestOfferCache = { value: null, expiresAt: 0 };
+
+function readCache(entry) {
+  if (!entry || Date.now() > entry.expiresAt) return null;
+  return entry.value;
+}
+
+function writeCache(target, value) {
+  target.value = value;
+  target.expiresAt = Date.now() + CACHE_TTL_MS;
+}
+
+function clearBranchCache(branch) {
+  if (branch) {
+    branchCardsCache.delete(branch);
+    return;
+  }
+  branchCardsCache.clear();
+}
+
+function clearOfferCache() {
+  latestOfferCache.value = null;
+  latestOfferCache.expiresAt = 0;
+}
 
 function extractCloudinaryPublicIdFromUrl(url) {
   if (!url || typeof url !== 'string') return '';
@@ -284,6 +313,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     if (slot === 'after') card.afterImg = result.secure_url;
 
     await cardData.save();
+    clearBranchCache(branch);
 
     res.status(201).json({
       url: result.secure_url,
@@ -324,6 +354,7 @@ app.post('/api/save-cards', async (req, res) => {
   try {
     await CardData.deleteMany({ branch });
     await new CardData({ branch, cards }).save();
+    clearBranchCache(branch);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to save cards' });
@@ -336,9 +367,16 @@ app.get('/api/load-cards', async (req, res) => {
   if (!branch) return res.status(400).json({ error: 'Missing branch' });
 
   try {
-    const data = await CardData.findOne({ branch });
+    const cachedCards = readCache(branchCardsCache.get(branch));
+    if (cachedCards) {
+      return res.json({ cards: cachedCards });
+    }
+
+    const data = await CardData.findOne({ branch }).lean();
     // Frontend expects an object with a `cards` array
-    res.json({ cards: data ? data.cards : [] });
+    const cards = data ? data.cards : [];
+    branchCardsCache.set(branch, { value: cards, expiresAt: Date.now() + CACHE_TTL_MS });
+    res.json({ cards });
   } catch (err) {
     res.status(500).json({ error: 'Failed to load cards' });
   }
@@ -347,14 +385,21 @@ app.get('/api/load-cards', async (req, res) => {
 // ✅ Latest Offer (index.html)
 app.get('/api/offers/latest', async (req, res) => {
   try {
-    const offer = await Offer.findOne({ key: 'latestOffer' });
+    const cachedOffer = readCache(latestOfferCache);
+    if (cachedOffer) {
+      return res.json(cachedOffer);
+    }
+
+    const offer = await Offer.findOne({ key: 'latestOffer' }).lean();
     if (!offer) return res.json(null);
-    res.json({
+    const payload = {
       title: offer.title || '',
       details: offer.details || '',
       imageUrl: offer.imageUrl || '',
       updatedAt: offer.updatedAt
-    });
+    };
+    writeCache(latestOfferCache, payload);
+    res.json(payload);
   } catch (err) {
     res.status(500).json({ error: 'Failed to load offer' });
   }
@@ -371,6 +416,7 @@ app.post('/api/offers/latest', async (req, res) => {
       { key: 'latestOffer', title, details, imageUrl, updatedAt: new Date() },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
+    clearOfferCache();
     res.json({
       title: offer.title || '',
       details: offer.details || '',
@@ -385,6 +431,7 @@ app.post('/api/offers/latest', async (req, res) => {
 app.delete('/api/offers/latest', async (req, res) => {
   try {
     await Offer.deleteOne({ key: 'latestOffer' });
+    clearOfferCache();
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete offer' });

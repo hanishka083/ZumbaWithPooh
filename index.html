@@ -1186,7 +1186,7 @@
       </div>
       <div class="footer-item">
         <i class="fas fa-envelope"></i>
-        <span>info@zumbawithpooh.com</span>
+        <span>poojarupani1995@gmail.com</span>
       </div>
     </div>
   </footer>
@@ -1252,6 +1252,60 @@
     const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
       ? 'http://localhost:5000/api'
       : DEPLOYED_API_BASE;
+    const OFFER_CACHE_KEY = 'zumba_latest_offer_cache';
+    const OFFER_CACHE_TTL_MS = 5 * 60 * 1000;
+
+    function getTargetWidth() {
+      if (typeof window === 'undefined') return 1200;
+      const viewport = window.innerWidth || 0;
+      const scaled = viewport ? Math.round(viewport * 1.1) : 0;
+      return Math.min(Math.max(scaled || 960, 640), 1400);
+    }
+
+    function getOptimizedImage(url, width = getTargetWidth()) {
+      if (!url || typeof url !== 'string') return url;
+      if (!url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
+      const parts = url.split('/upload/');
+      if (parts.length < 2) return url;
+      const prefix = parts[0];
+      const suffix = parts.slice(1).join('/upload/');
+      const transformation = 'f_auto,q_auto:eco,c_limit,w_' + width;
+      if (/^f_auto/.test(suffix)) {
+        const segments = suffix.split('/');
+        if (!segments.length) return url;
+        if (segments[0].includes('w_')) {
+          segments[0] = segments[0].replace(/w_\d+/, 'w_' + width);
+        } else {
+          segments[0] = segments[0] + ',w_' + width;
+        }
+        return prefix + '/upload/' + segments.join('/');
+      }
+      return prefix + '/upload/' + transformation + '/' + suffix;
+    }
+
+    function readOfferCache() {
+      try {
+        const raw = localStorage.getItem(OFFER_CACHE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || Date.now() - parsed.ts > OFFER_CACHE_TTL_MS || !parsed.offer) return null;
+        return parsed.offer;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function writeOfferCache(offer) {
+      try {
+        localStorage.setItem(OFFER_CACHE_KEY, JSON.stringify({ ts: Date.now(), offer }));
+      } catch (err) {}
+    }
+
+    function clearOfferCache() {
+      try {
+        localStorage.removeItem(OFFER_CACHE_KEY);
+      } catch (err) {}
+    }
 
     // Cloudinary Configuration
     const CLOUDINARY_CLOUD_NAME = 'dydajkqdk';
@@ -1427,7 +1481,7 @@
         document.getElementById('offerTitle').value = data.title || '';
         document.getElementById('offerDetails').value = data.details || '';
         if (data.imageUrl) {
-          document.getElementById('offerImagePreview').src = data.imageUrl;
+          document.getElementById('offerImagePreview').src = getOptimizedImage(data.imageUrl);
           document.getElementById('offerImagePreview').style.display = 'block';
         }
       } catch (error) {
@@ -1515,6 +1569,7 @@
         statusEl.textContent = '✓ Offer saved!';
         statusEl.style.color = '#11b19b';
         currentOfferImageFile = null;
+        clearOfferCache();
 
         if (imageUrl) {
           previewEl.src = imageUrl;
@@ -1550,6 +1605,7 @@
         document.getElementById('offerTitle').value = '';
         document.getElementById('offerDetails').value = '';
         document.getElementById('offerImagePreview').style.display = 'none';
+        clearOfferCache();
 
         statusEl.textContent = '✓ Offer deleted!';
         statusEl.style.color = '#11b19b';
@@ -1563,6 +1619,75 @@
         statusEl.textContent = '❌ Error: ' + error.message;
         statusEl.style.color = '#ff6b6b';
       }
+    }
+
+    function renderOffer(data) {
+      const imageEl = document.getElementById('offerDisplayImage');
+      const textEl = document.getElementById('offerDisplayText');
+      const noOfferEl = document.getElementById('noOfferMessage');
+      const titleEl = document.getElementById('offerDisplayTitle');
+      const validityEl = document.getElementById('offerValidity');
+
+      if (!data) {
+        textEl.textContent = '';
+        noOfferEl.style.display = 'block';
+        return;
+      }
+
+      const rawTitle = (data.title || '').trim();
+      if (titleEl && rawTitle) {
+        titleEl.textContent = rawTitle;
+        titleEl.style.display = 'block';
+      } else if (titleEl) {
+        titleEl.style.display = 'none';
+      }
+
+      const extracted = extractValidity(data.details || '');
+      if (validityEl && extracted.validity) {
+        validityEl.textContent = `⏳ ${extracted.validity}`;
+        validityEl.style.display = 'inline-block';
+      } else if (validityEl) {
+        validityEl.style.display = 'none';
+      }
+
+      if (data.imageUrl) {
+        imageEl.src = getOptimizedImage(data.imageUrl);
+        imageEl.loading = 'eager';
+        imageEl.decoding = 'async';
+        imageEl.style.display = 'block';
+      } else {
+        imageEl.style.display = 'none';
+      }
+
+      const displayText = extracted.details || '';
+      const hasText = !!displayText;
+      const hasImage = !!data.imageUrl;
+      const hasTitle = !!rawTitle;
+      const hasValidity = !!extracted.validity;
+
+      if (hasText) {
+        textEl.textContent = displayText;
+        textEl.style.display = 'block';
+      } else {
+        textEl.textContent = '';
+        textEl.style.display = 'none';
+      }
+
+      if (hasText || hasImage || hasTitle || hasValidity) {
+        noOfferEl.style.display = 'none';
+      } else {
+        noOfferEl.style.display = 'block';
+      }
+    }
+
+    function prefetchLatestOffer() {
+      if (readOfferCache()) return;
+      fetch(`${API_BASE}/offers/latest`)
+        .then((response) => response.ok ? response.json() : null)
+        .then((data) => {
+          if (data) writeOfferCache(data);
+        })
+        .catch(() => {});
     }
 
     // View latest offer (for users)
@@ -1587,59 +1712,17 @@
       if (titleEl) titleEl.style.display = 'none';
       if (validityEl) validityEl.style.display = 'none';
 
+      const cachedOffer = readOfferCache();
+      if (cachedOffer) {
+        renderOffer(cachedOffer);
+      }
+
       try {
         const response = await fetch(`${API_BASE}/offers/latest`);
         if (!response.ok) throw new Error('Failed to load offer');
         const data = await response.json();
-        
-        if (data) {
-
-          const rawTitle = (data.title || '').trim();
-          if (titleEl && rawTitle) {
-            titleEl.textContent = rawTitle;
-            titleEl.style.display = 'block';
-          } else if (titleEl) {
-            titleEl.style.display = 'none';
-          }
-
-          const extracted = extractValidity(data.details || '');
-          if (validityEl && extracted.validity) {
-            validityEl.textContent = `⏳ ${extracted.validity}`;
-            validityEl.style.display = 'inline-block';
-          } else if (validityEl) {
-            validityEl.style.display = 'none';
-          }
-          
-          if (data.imageUrl) {
-            imageEl.src = data.imageUrl;
-            imageEl.style.display = 'block';
-          } else {
-            imageEl.style.display = 'none';
-          }
-          
-          const displayText = extracted.details || '';
-          const hasText = !!displayText;
-          const hasImage = !!data.imageUrl;
-          const hasTitle = !!rawTitle;
-          const hasValidity = !!extracted.validity;
-
-          if (hasText) {
-            textEl.textContent = displayText;
-            textEl.style.display = 'block';
-          } else {
-            textEl.textContent = '';
-            textEl.style.display = 'none';
-          }
-
-          if (hasText || hasImage || hasTitle || hasValidity) {
-            noOfferEl.style.display = 'none';
-          } else {
-            noOfferEl.style.display = 'block';
-          }
-        } else {
-          textEl.textContent = '';
-          noOfferEl.style.display = 'block';
-        }
+        renderOffer(data);
+        writeOfferCache(data);
       } catch (error) {
         console.error('Error loading offer:', error);
         textEl.textContent = '';
@@ -1669,6 +1752,7 @@
     window.onload = function() {
       const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
       updateAdminUI(isAdmin);
+      prefetchLatestOffer();
     };
   </script>
 </body>
