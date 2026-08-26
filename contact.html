@@ -323,6 +323,27 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* CTA banner under the main title */
+  .cta-banner {
+    text-align: center;
+    margin: 10px 0 28px 0;
+  }
+  .cta-link {
+    display: inline-block;
+    background: linear-gradient(90deg, #ff3a6b 0%, #ff8bb0 100%);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 8px 30px rgba(255,90,140,0.18);
+    transition: transform 0.14s ease, box-shadow 0.14s ease;
+  }
+  .cta-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(255,90,140,0.22);
+  }
   .contact-form {
     background: rgba(255,255,255,0.05);
     border-radius: 10px;
@@ -552,6 +573,9 @@
 
   <div class="main-content">
     <h1 class="page-title">Contact Us</h1>
+    <div class="cta-banner">
+      <a class="cta-link" href="https://forms.gle/kCcXXyXGBKaVTkiXA" target="_blank" rel="noopener">Secure Your Spot — Register Online Now!</a>
+    </div>
 
     <div class="contact-layout">
       <section class="map-panel">
@@ -591,10 +615,7 @@
               <label for="name">Name</label>
               <input type="text" id="name" name="name" required placeholder="Your Name">
             </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required placeholder="Your Email">
-            </div>
+            <!-- Email removed per request: users will be redirected to WhatsApp -->
             <div class="form-group">
               <label for="phone">Phone Number</label>
               <input type="tel" id="phone" name="phone" placeholder="Your Phone Number">
@@ -617,9 +638,13 @@
 
   <script>
     const DEPLOYED_API_BASE = 'https://zumbawithpooh.onrender.com/api';
-    const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    // Use local API when running from file:// or when hostname is localhost
+    const API_BASE = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')
       ? 'http://localhost:5000/api'
       : DEPLOYED_API_BASE;
+
+    // Diagnostic: print which API base the page will use
+    console.log('Zumba contact page - API_BASE =', API_BASE);
 
     function updateAdminUI(isAdmin) {
       const adminBtn = document.getElementById('adminBtn');
@@ -729,6 +754,29 @@
           messageEl.append(' ', inq.message || '');
           item.appendChild(messageEl);
 
+          // Delete button (visible to admin panel)
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.style.cssText = 'margin-top:12px;background:#ff4d6d;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;';
+          deleteBtn.addEventListener('click', async () => {
+            if (!confirm('Delete this inquiry? This cannot be undone.')) return;
+            try {
+              const deleteUrl = `${API_BASE}/contact/inquiries/${inq._id}`;
+              console.log('Deleting inquiry, URL:', deleteUrl);
+              const resp = await fetch(deleteUrl, { method: 'DELETE' });
+              if (!resp.ok) {
+                const body = await resp.text().catch(() => resp.statusText || '');
+                throw new Error(`Delete failed: ${resp.status} ${body}`);
+              }
+              item.remove();
+            } catch (err) {
+              console.error('Failed to delete inquiry:', err);
+              alert('Failed to delete inquiry. See console for details.');
+            }
+          });
+
+          item.appendChild(deleteBtn);
+
           list.appendChild(item);
         });
       } catch (error) {
@@ -737,38 +785,23 @@
       }
     }
 
-    document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const payload = {
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        message: document.getElementById('message').value.trim()
-      };
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const message = document.getElementById('message').value.trim();
 
-      try {
-        const response = await fetch(`${API_BASE}/contact/inquiries`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          throw new Error('Submission failed');
-        }
-
-        await response.json();
-        alert('Thank you for your message! We will get back to you soon.');
-        this.reset();
-
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
-          loadInquiries();
-        }
-      } catch (error) {
-        console.error('Error submitting inquiry:', error);
-        alert('Something went wrong. Please try again later.');
+      if (!name || !message) {
+        alert('Please provide your name and message.');
+        return;
       }
+
+      const text = `Name: ${name}\nPhone: ${phone || 'Not provided'}\n\nMessage:\n${message}`;
+      // Redirect to WhatsApp chat for the requested number
+      const waUrl = `https://api.whatsapp.com/send?phone=8976593179&text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank');
+      this.reset();
     });
 
     window.onload = function() {

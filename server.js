@@ -511,6 +511,27 @@ app.get('/api/contact/inquiries', async (req, res) => {
   }
 });
 
+// Delete a contact inquiry by id
+app.delete('/api/contact/inquiries/:id', async (req, res) => {
+  const { id } = req.params;
+
+  // Diagnostic log to confirm the server received the delete request
+  console.log('DEBUG: DELETE /api/contact/inquiries/:id called with id=', id);
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid inquiry id' });
+  }
+
+  try {
+    const deleted = await ContactInquiry.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ error: 'Inquiry not found' });
+    res.json({ success: true, id });
+  } catch (err) {
+    console.error('Failed to delete inquiry:', err);
+    res.status(500).json({ error: 'Failed to delete inquiry' });
+  }
+});
+
 // ✅ Video reviews
 app.post('/api/videos/upload', upload.single('video'), async (req, res) => {
   if (!req.file) {
