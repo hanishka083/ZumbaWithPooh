@@ -1246,11 +1246,11 @@
 
   <script>
     // Backend API
-    // - Local dev: http://localhost:5000/api
+    // - Local dev: same origin /api
     // - Deployed (required for GitHub Pages QR link): set your public API base below
     const DEPLOYED_API_BASE = 'https://zumbawithpooh.onrender.com/api';
     const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-      ? 'http://localhost:5000/api'
+      ? '/api'
       : DEPLOYED_API_BASE;
     const OFFER_CACHE_KEY = 'zumba_latest_offer_cache';
     const OFFER_CACHE_TTL_MS = 5 * 60 * 1000;

@@ -640,7 +640,7 @@
     const DEPLOYED_API_BASE = 'https://zumbawithpooh.onrender.com/api';
     // Use local API when running from file:// or when hostname is localhost
     const API_BASE = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-      ? 'http://localhost:5000/api'
+      ? '/api'
       : DEPLOYED_API_BASE;
 
     // Diagnostic: print which API base the page will use
@@ -799,7 +799,7 @@
 
       const text = `Name: ${name}\nPhone: ${phone || 'Not provided'}\n\nMessage:\n${message}`;
       // Redirect to WhatsApp chat for the requested number
-      const waUrl = `https://api.whatsapp.com/send?phone=8976593179&text=${encodeURIComponent(text)}`;
+      const waUrl = `https://api.whatsapp.com/send?phone=918976593179&text=${encodeURIComponent(text)}`;
       window.open(waUrl, '_blank');
       this.reset();
     });
